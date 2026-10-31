@@ -1,0 +1,41 @@
+# Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/app/data/*.db
+backend/app/data/*.db-shm
+backend/app/data/*.db-wal
+*.db
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+venv/
+env/
+.env
+
+# Uploads cache (keep directory structure)
+uploads/grievances/*
+uploads/annotated/*
+uploads/agent_screenshots/*
+uploads/forensics/*
+uploads/tts/*
+!uploads/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
