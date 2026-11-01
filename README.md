@@ -194,8 +194,8 @@ python -m venv venv
 # Linux/macOS:
 source venv/bin/activate
 
-# Install required Python packages
-pip install fastapi uvicorn pydantic pyjwt cryptography opencv-python pillow edge-tts gtts SpeechRecognition deep-translator httpx beautifulsoup4 playwright pytest pytest-asyncio
+# Install backend dependencies
+pip install -r requirements.txt
 
 # Install Playwright browser dependencies
 python -m playwright install chromium
@@ -206,7 +206,7 @@ python -m pytest tests/test_civicconnect.py -v
 # Start FastAPI server on port 8000
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-The backend will automatically create tables in `backend/app/data/civicconnect.db`, seed benchmark schemes, and begin querying live PIB RSS feeds. Swagger interactive API documentation is available at `http://127.0.0.1:8000/docs`.
+Copy the project-root `.env.example` to `.env` and set `DATABASE_URL` to your Supabase PostgreSQL connection string. Keep `.env` private; it is ignored by Git. Rotate any database password shared in chat before using it. Leave `DATABASE_URL` empty to use local SQLite instead. On startup, the backend creates the configured schema, seeds benchmark schemes, and begins querying live PIB RSS feeds. Swagger interactive API documentation is available at `http://127.0.0.1:8000/docs`.
 
 ### 3. Frontend Setup
 ```bash

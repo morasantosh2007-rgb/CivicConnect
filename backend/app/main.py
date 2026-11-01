@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
-from app.core.database import init_db
+from app.core.database import get_db_connection, init_db
 from app.services.pib_ingestion import seed_benchmark_schemes, fetch_live_pib_releases
 
 # API Routers
@@ -72,9 +72,20 @@ def root_status():
 
 @app.get(f"{settings.API_V1_STR}/health")
 def healthcheck():
+    conn = get_db_connection()
+    try:
+        conn.execute("SELECT 1")
+    finally:
+        conn.close()
+
+    database = (
+        "supabase_postgresql"
+        if settings.DATABASE_URL.startswith(("postgres://", "postgresql://"))
+        else "sqlite_wal_active"
+    )
     return {
         "status": "healthy",
-        "database": "sqlite_wal_active",
+        "database": database,
         "supported_languages": settings.SUPPORTED_LANGUAGES,
         "pib_ingestion": "active",
         "computer_vision": "active",

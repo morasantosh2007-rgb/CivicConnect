@@ -2,10 +2,15 @@ import os
 from pathlib import Path
 from typing import List
 
+from dotenv import load_dotenv
+
 # Base directory paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = BASE_DIR / "app" / "data"
 UPLOAD_DIR = BASE_DIR.parent / "uploads"
+
+# Load the project-root environment file regardless of the current directory.
+load_dotenv(BASE_DIR.parent / ".env")
 
 # Ensure directories exist
 DATA_DIR.mkdir(parents=True, exist_ok=True)

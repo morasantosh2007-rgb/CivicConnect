@@ -26,6 +26,12 @@ def test_root_and_health():
     health_res = client.get(f"{settings.API_V1_STR}/health")
     assert health_res.status_code == 200
     assert health_res.json()["status"] == "healthy"
+    expected_database = (
+        "supabase_postgresql"
+        if settings.DATABASE_URL.startswith(("postgres://", "postgresql://"))
+        else "sqlite_wal_active"
+    )
+    assert health_res.json()["database"] == expected_database
 
 def test_auth_workflow():
     test_email = f"citizen.{secrets.token_hex(4)}@civicconnect.in"

@@ -1,0 +1,30 @@
+# API and data validation
+fastapi
+uvicorn
+pydantic
+python-multipart
+
+# Database and environment configuration
+psycopg2-binary
+python-dotenv
+
+# Authentication and security
+PyJWT
+cryptography
+
+# CivicConnect services
+google-genai
+opencv-python
+numpy
+Pillow
+edge-tts
+gTTS
+SpeechRecognition
+deep-translator
+httpx
+beautifulsoup4
+playwright
+
+# Tests
+pytest
+pytest-asyncio
