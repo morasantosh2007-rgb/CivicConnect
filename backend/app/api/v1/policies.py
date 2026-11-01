@@ -8,6 +8,7 @@ from app.services.pib_ingestion import (
     evaluate_scheme_eligibility,
     seed_benchmark_schemes
 )
+from app.services.scheme_translations import get_localized_scheme_attributes
 from app.services.tts_service import synthesize_speech
 from app.schemas.schemas import SchemeEligibilityCheck, TextToSpeechRequest
 
@@ -53,6 +54,15 @@ async def list_policies(
         d = dict_from_row(r)
         # Select appropriate language summary with fallback to English
         d["localized_summary"] = d.get(summary_key) or d.get("summary_en", "")
+        # Apply authoritative native translations for titles, departments, benefits, targets
+        loc_attrs = get_localized_scheme_attributes(d.get("title", ""), language)
+        if loc_attrs:
+            d["title"] = loc_attrs["title"]
+            d["department"] = loc_attrs["department"]
+            d["category"] = loc_attrs["category"]
+            d["affected_citizens"] = loc_attrs["affected_citizens"]
+            d["deadline"] = loc_attrs["deadline"]
+            d["benefits_description"] = loc_attrs["benefits_description"]
         results.append(d)
 
     return {
@@ -77,6 +87,14 @@ async def get_policy(policy_id: int, language: str = "en"):
     d = dict_from_row(row)
     summary_key = f"summary_{language}" if language in ["te", "hi", "ta", "kn"] else "summary_en"
     d["localized_summary"] = d.get(summary_key) or d.get("summary_en", "")
+    loc_attrs = get_localized_scheme_attributes(d.get("title", ""), language)
+    if loc_attrs:
+        d["title"] = loc_attrs["title"]
+        d["department"] = loc_attrs["department"]
+        d["category"] = loc_attrs["category"]
+        d["affected_citizens"] = loc_attrs["affected_citizens"]
+        d["deadline"] = loc_attrs["deadline"]
+        d["benefits_description"] = loc_attrs["benefits_description"]
     return d
 
 @router.post("/refresh-live-pib")
@@ -125,7 +143,7 @@ async def check_eligibility(
     evaluations = []
     for s_row in schemes:
         s_dict = dict_from_row(s_row)
-        ev = evaluate_scheme_eligibility(s_dict, effective_profile)
+        ev = evaluate_scheme_eligibility(s_dict, effective_profile, language=criteria.language)
         evaluations.append(ev)
 
     return {

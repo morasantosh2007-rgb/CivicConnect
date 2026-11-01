@@ -80,7 +80,7 @@ export default function Grievances() {
 
   const handleVote = async (grievanceId) => {
     if (!user) {
-      alert('Please sign in to support this report.');
+      alert(t('alert_signin_upvote'));
       return;
     }
     try {
@@ -99,7 +99,7 @@ export default function Grievances() {
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+      alert(t('alert_geo_unsupported'));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -113,7 +113,7 @@ export default function Grievances() {
       },
       (err) => {
         console.error('Geo error:', err);
-        alert('Could not retrieve GPS coordinates. Please enter location manually.');
+        alert(t('alert_geo_failed'));
       }
     );
   };
@@ -143,7 +143,7 @@ export default function Grievances() {
       }, 1000);
     } catch (err) {
       console.error('Microphone error:', err);
-      alert('Unable to access microphone. Please check browser permissions.');
+      alert(t('alert_mic_failed'));
     }
   };
 
@@ -167,7 +167,7 @@ export default function Grievances() {
   const handleSubmitGrievance = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert('Please sign in to file an official grievance.');
+      alert(t('alert_signin_grievance'));
       return;
     }
     setSubmitting(true);
@@ -194,7 +194,7 @@ export default function Grievances() {
       fetchGrievances();
     } catch (err) {
       console.error('Submission error:', err);
-      alert('Failed to submit grievance. Please verify fields and try again.');
+      alert(t('alert_submit_grievance_failed'));
     } finally {
       setSubmitting(false);
     }
@@ -217,7 +217,7 @@ export default function Grievances() {
   const handlePostComment = async (grievanceId) => {
     if (!newCommentText.trim()) return;
     if (!user) {
-      alert('Please sign in to join community discussion.');
+      alert(t('alert_signin_comment'));
       return;
     }
     try {
@@ -269,6 +269,18 @@ export default function Grievances() {
       case 'Other infrastructure': return t('cat_other_infra');
       default: return cat;
     }
+  };
+
+  const getGrievanceDeptLabel = (dept) => {
+    if (!dept) return '';
+    const d = dept.toLowerCase();
+    if (d.includes('road') || d.includes('public works') || d.includes('pwd')) return t('dept_pwd');
+    if (d.includes('water') || d.includes('sewerage')) return t('dept_water');
+    if (d.includes('sanitation') || d.includes('waste')) return t('dept_sanitation');
+    if (d.includes('drainage') || d.includes('flood')) return t('dept_drainage');
+    if (d.includes('electric') || d.includes('lighting')) return t('dept_electric');
+    if (d.includes('forest') || d.includes('park')) return t('dept_parks');
+    return dept;
   };
 
   const getGrievanceStatusLabel = (status) => {
@@ -381,7 +393,7 @@ export default function Grievances() {
                       ? 'text-amber-600 bg-amber-100 font-bold'
                       : 'text-slate-500 hover:text-amber-600 hover:bg-slate-100'
                   }`}
-                  title="Upvote / Support this report"
+                  title={t('upvote_action')}
                 >
                   <ThumbsUp size={18} />
                 </button>
@@ -466,7 +478,7 @@ export default function Grievances() {
                 <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-slate-500">
                   <span className="inline-flex items-center space-x-1 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700">
                     <Building size={12} className="text-blue-700" />
-                    <span>{g.department}</span>
+                    <span>{getGrievanceDeptLabel(g.department)}</span>
                   </span>
 
                   {g.address && (
@@ -567,10 +579,10 @@ export default function Grievances() {
                     {t('ticket_ref')} <strong>{submissionResult.grievance.ticket_number}</strong>
                   </p>
                   <p>
-                    {t('routed_to')} <strong>{submissionResult.ai_analysis.routed_department}</strong>
+                    {t('routed_to')} <strong>{getGrievanceDeptLabel(submissionResult.ai_analysis.routed_department)}</strong>
                   </p>
                   <p>
-                    {t('ai_recommended_severity')} <strong>{submissionResult.ai_analysis.suggested_severity}</strong> (Confidence: {submissionResult.ai_analysis.severity_confidence * 100}%)
+                    {t('ai_recommended_severity')} <strong>{getGrievanceSeverityLabel(submissionResult.ai_analysis.suggested_severity)}</strong> (Confidence: {submissionResult.ai_analysis.severity_confidence * 100}%)
                   </p>
                   <p className="text-slate-600 italic">
                     "{submissionResult.ai_analysis.severity_rationale}"

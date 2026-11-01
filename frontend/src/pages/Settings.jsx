@@ -86,7 +86,7 @@ export default function Settings() {
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
               }`}
             >
-              {highContrast ? 'Enabled' : 'Disabled'}
+              {highContrast ? t('status_enabled') : t('status_disabled')}
             </button>
           </div>
 
@@ -106,7 +106,7 @@ export default function Settings() {
                       : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
                   }`}
                 >
-                  {size}
+                  {t('font_' + size.replace('-', '_'))}
                 </button>
               ))}
             </div>

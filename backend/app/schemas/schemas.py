@@ -84,6 +84,7 @@ class SchemeEligibilityCheck(BaseModel):
     category: Optional[str] = None
     disability_status: Optional[str] = None
     employment_status: Optional[str] = None
+    language: str = "en"
 
 class TextToSpeechRequest(BaseModel):
     text: str

@@ -75,7 +75,7 @@ export default function Assistant() {
 
   const toggleSpeech = () => {
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      alert('Speech recognition is not supported in this browser.');
+      alert(t('alert_speech_unsupported'));
       return;
     }
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -201,7 +201,7 @@ export default function Assistant() {
         <div className="p-4 bg-white border-t border-slate-200 flex items-center space-x-2">
           <button
             onClick={toggleSpeech}
-            title={isRecording ? 'Stop voice recording' : 'Speak voice question'}
+            title={isRecording ? t('speech_stop_recording') : t('speech_start_recording')}
             className={`p-3 rounded-xl transition ${
               isRecording
                 ? 'bg-red-600 text-white animate-pulse'

@@ -22,7 +22,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 
 export default function Services() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { user, profile } = useAuth();
 
   const [catalog, setCatalog] = useState([]);
@@ -39,15 +39,18 @@ export default function Services() {
 
   useEffect(() => {
     fetchServiceCatalog();
-  }, []);
+  }, [language]);
 
   const fetchServiceCatalog = async () => {
     try {
       setLoadingCatalog(true);
-      const res = await axios.get('/api/v1/services/catalog');
+      const res = await axios.get(`/api/v1/services/catalog?language=${language}`);
       setCatalog(res.data || []);
       if (res.data?.length > 0) {
-        setSelectedService(res.data[0]);
+        setSelectedService(prev => {
+          if (!prev) return res.data[0];
+          return res.data.find(s => s.id === prev.id) || res.data[0];
+        });
       }
     } catch (err) {
       console.error('Fetch catalog error:', err);
@@ -58,7 +61,7 @@ export default function Services() {
 
   const handleInitiateAgent = async () => {
     if (!user) {
-      alert('Please sign in to execute public service workflows.');
+      alert(t('alert_signin_services'));
       return;
     }
     if (!selectedService) return;

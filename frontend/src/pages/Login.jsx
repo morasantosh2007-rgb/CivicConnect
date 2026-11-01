@@ -23,7 +23,7 @@ export default function Login() {
       navigate('/');
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.response?.data?.detail || 'Invalid email or password.');
+      setError(err.response?.data?.detail || t('error_invalid_credentials'));
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="citizen@gov.in"
+                placeholder={t('email_placeholder')}
                 className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>

@@ -61,6 +61,38 @@ export default function Home() {
     }
   };
 
+  const getGrievanceCategoryLabel = (cat) => {
+    switch (cat) {
+      case 'Potholes': return t('cat_potholes');
+      case 'Road cracks': return t('cat_road_cracks');
+      case 'Damaged roads': return t('cat_damaged_roads');
+      case 'Water leakage': return t('cat_water_leakage');
+      case 'Waterlogging': return t('cat_waterlogging');
+      case 'Drainage problems': return t('cat_drainage');
+      case 'Garbage accumulation': return t('cat_garbage');
+      case 'Overflowing dustbins': return t('cat_dustbins');
+      case 'Broken streetlights': return t('cat_streetlights');
+      case 'Damaged bridges': return t('cat_bridges');
+      case 'Open manholes': return t('cat_manholes');
+      case 'Fallen trees': return t('cat_fallen_trees');
+      case 'Electrical hazards': return t('cat_electrical');
+      case 'Other infrastructure': return t('cat_other_infra');
+      default: return cat;
+    }
+  };
+
+  const getGrievanceDeptLabel = (dept) => {
+    if (!dept) return '';
+    const d = dept.toLowerCase();
+    if (d.includes('road') || d.includes('public works') || d.includes('pwd')) return t('dept_pwd');
+    if (d.includes('water') || d.includes('sewerage')) return t('dept_water');
+    if (d.includes('sanitation') || d.includes('waste')) return t('dept_sanitation');
+    if (d.includes('drainage') || d.includes('flood')) return t('dept_drainage');
+    if (d.includes('electric') || d.includes('lighting')) return t('dept_electric');
+    if (d.includes('forest') || d.includes('park')) return t('dept_parks');
+    return dept;
+  };
+
   return (
     <div className="space-y-8 pb-16">
       {/* Hero Section — 100% Fully Translated */}
@@ -268,7 +300,7 @@ export default function Home() {
           <div className="flex items-center space-x-2">
             <button
               onClick={handleRefreshLivePIB}
-              title="Query Live PIB Feed"
+              title={t('refresh_pib')}
               className="text-xs bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-300 flex items-center space-x-1 transition shadow-xs"
             >
               <RefreshCw size={13} />
@@ -414,9 +446,9 @@ export default function Home() {
                   <p className="text-xs text-slate-600 mt-1 line-clamp-2">{g.description}</p>
 
                   <div className="mt-3 flex items-center space-x-2 text-[10px] text-slate-500">
-                    <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-medium">{g.category}</span>
+                    <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-medium">{getGrievanceCategoryLabel(g.category)}</span>
                     <span className="text-slate-400">•</span>
-                    <span>{g.department}</span>
+                    <span>{getGrievanceDeptLabel(g.department)}</span>
                   </div>
                 </div>
 

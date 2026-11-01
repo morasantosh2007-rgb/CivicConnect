@@ -79,7 +79,7 @@ export default function FloatingAssistant() {
 
   const toggleSpeechRecognition = () => {
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      alert('Speech recognition is not supported in this browser. Please type your query.');
+      alert(t('alert_speech_unsupported'));
       return;
     }
 
@@ -260,7 +260,7 @@ export default function FloatingAssistant() {
           <div className="p-3 bg-white border-t border-slate-200 flex items-center space-x-2">
             <button
               onClick={toggleSpeechRecognition}
-              title={isRecording ? 'Stop speech recognition' : 'Speak your question'}
+              title={isRecording ? t('speech_stop_recording') : t('speech_start_recording')}
               className={`p-2 rounded-xl transition ${
                 isRecording
                   ? 'bg-red-600 text-white animate-pulse'

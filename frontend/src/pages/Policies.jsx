@@ -106,7 +106,8 @@ export default function Policies() {
         district: eligibilityForm.district || null,
         category: eligibilityForm.category || null,
         employment_status: eligibilityForm.employment_status || null,
-        disability_status: eligibilityForm.disability_status || null
+        disability_status: eligibilityForm.disability_status || null,
+        language: language
       };
       const res = await axios.post('/api/v1/policies/check-eligibility', payload);
       setEligibilityResults(res.data.results || []);
@@ -347,7 +348,7 @@ export default function Policies() {
                   type="number"
                   value={eligibilityForm.age}
                   onChange={(e) => setEligibilityForm({ ...eligibilityForm, age: e.target.value })}
-                  placeholder="e.g. 28"
+                  placeholder={t('placeholder_age')}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
@@ -358,7 +359,7 @@ export default function Policies() {
                   type="number"
                   value={eligibilityForm.annual_income}
                   onChange={(e) => setEligibilityForm({ ...eligibilityForm, annual_income: e.target.value })}
-                  placeholder="e.g. 250000"
+                  placeholder={t('placeholder_income')}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
@@ -369,7 +370,7 @@ export default function Policies() {
                   type="text"
                   value={eligibilityForm.state}
                   onChange={(e) => setEligibilityForm({ ...eligibilityForm, state: e.target.value })}
-                  placeholder="e.g. Telangana, Maharashtra"
+                  placeholder={t('placeholder_state')}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
@@ -382,11 +383,11 @@ export default function Policies() {
                   className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
                   <option value="">{t('select_category')}</option>
-                  <option value="General">General</option>
-                  <option value="OBC">OBC (Other Backward Classes)</option>
-                  <option value="SC">SC (Scheduled Caste)</option>
-                  <option value="ST">ST (Scheduled Tribe)</option>
-                  <option value="EWS">EWS (Economically Weaker Section)</option>
+                  <option value="General">{t('cat_general')}</option>
+                  <option value="OBC">{t('cat_obc')}</option>
+                  <option value="SC">{t('cat_sc')}</option>
+                  <option value="ST">{t('cat_st')}</option>
+                  <option value="EWS">{t('cat_ews')}</option>
                 </select>
               </div>
 

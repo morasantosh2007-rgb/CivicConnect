@@ -38,6 +38,15 @@ export default function Verification() {
   const [auditResult, setAuditResult] = useState(null);
   const [history, setHistory] = useState([]);
 
+  const getLocalizedVerdict = (v) => {
+    if (!v) return '';
+    if (v.includes('Verified')) return t('verdict_verified');
+    if (v.includes('Contradicted')) return t('verdict_contradicted');
+    if (v.includes('Misleading')) return t('verdict_misleading');
+    if (v.includes('Insufficient')) return t('verdict_insufficient');
+    return v;
+  };
+
   useEffect(() => {
     if (user) {
       fetchHistory();
@@ -56,7 +65,7 @@ export default function Verification() {
   const handleVerifyText = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert('Please sign in to run fact verification audits.');
+      alert(t('alert_signin_verify'));
       return;
     }
     if (!claimText.trim()) return;
@@ -77,7 +86,7 @@ export default function Verification() {
       fetchHistory();
     } catch (err) {
       console.error('Verify text error:', err);
-      alert('Verification analysis failed. Please try again.');
+      alert(t('alert_verify_failed'));
     } finally {
       setVerifying(false);
     }
@@ -86,11 +95,11 @@ export default function Verification() {
   const handleAuditMedia = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert('Please sign in to audit media assets.');
+      alert(t('alert_signin_audit_media'));
       return;
     }
     if (!mediaFile) {
-      alert('Please upload an image, audio, or video file.');
+      alert(t('alert_upload_media_required'));
       return;
     }
 
@@ -113,7 +122,7 @@ export default function Verification() {
       fetchHistory();
     } catch (err) {
       console.error('Media audit error:', err);
-      alert('Forensic media audit failed.');
+      alert(t('alert_media_audit_failed'));
     } finally {
       setVerifying(false);
     }
@@ -130,7 +139,7 @@ export default function Verification() {
   const copyShareLink = (token) => {
     const url = `${window.location.origin}/verify?token=${token}`;
     navigator.clipboard.writeText(url);
-    alert('Public verification report certificate URL copied to clipboard!');
+    alert(t('alert_cert_copied'));
   };
 
   return (
@@ -315,7 +324,7 @@ export default function Verification() {
                   {auditResult.fact_check.verdict === 'Contradicted' && <XCircle size={20} className="text-red-700" />}
                   {auditResult.fact_check.verdict === 'Misleading / Missing Context' && <AlertTriangle size={20} className="text-amber-700" />}
                   {auditResult.fact_check.verdict === 'Insufficient Evidence' && <HelpCircle size={20} className="text-slate-500" />}
-                  <span>{t('verdict_label')} {auditResult.fact_check.verdict}</span>
+                  <span>{t('verdict_label')} {getLocalizedVerdict(auditResult.fact_check.verdict)}</span>
                 </span>
                 <span className="text-xs font-mono font-bold bg-white/80 border border-slate-200 px-2.5 py-1 rounded-lg">
                   {t('confidence_label')} {auditResult.fact_check.confidence_score * 100}%
@@ -415,7 +424,7 @@ export default function Verification() {
                       <h4 className="font-bold text-[#0c2340]">{c.source_name}</h4>
                       <p className="text-[11px] text-slate-600 mt-0.5 italic">"{c.excerpt}"</p>
                       <span className="text-[10px] text-slate-500 mt-1 block">
-                        Publication Date: {c.publication_date} • {c.relationship_to_claim}
+                        {t('pub_date_label')}: {c.publication_date} • {c.relationship_to_claim}
                       </span>
                     </div>
                     <a
@@ -459,7 +468,7 @@ export default function Verification() {
                         : 'bg-amber-100 text-amber-800 border-amber-300'
                     }`}
                   >
-                    {h.verdict}
+                    {getLocalizedVerdict(h.verdict)}
                   </span>
                   <p className="font-bold text-slate-900 line-clamp-1">{h.claim_text}</p>
                   <p className="text-[11px] text-slate-500 line-clamp-1">{h.explanation}</p>

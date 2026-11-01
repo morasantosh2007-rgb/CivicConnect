@@ -7,14 +7,15 @@ from app.services.browser_agent import (
     browser_agent,
     SUPPORTED_GOVERNMENT_SERVICES
 )
+from app.services.services_translations import get_localized_service
 from app.schemas.schemas import ServiceApplicationRequest, ServiceApprovalRequest
 
 router = APIRouter(prefix="/services", tags=["Autonomous Bureaucracy Agent"])
 
 @router.get("/catalog")
-def get_service_catalog():
+def get_service_catalog(language: str = "en"):
     """Lists supported government services available for agent assistance."""
-    return SUPPORTED_GOVERNMENT_SERVICES
+    return [get_localized_service(s, language) for s in SUPPORTED_GOVERNMENT_SERVICES]
 
 @router.post("/initiate")
 async def initiate_service(

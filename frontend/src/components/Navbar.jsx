@@ -129,7 +129,7 @@ export default function Navbar({ onToggleSidebar, isSidebarOpen }) {
                 </Link>
                 <button
                   onClick={logout}
-                  title="Sign Out"
+                  title={t('logout')}
                   className="p-2 text-slate-300 hover:text-red-400 hover:bg-slate-800 rounded-lg transition"
                 >
                   <LogOut size={16} />

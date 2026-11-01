@@ -39,7 +39,7 @@ export default function Register() {
       navigate('/');
     } catch (err) {
       console.error('Registration error:', err);
-      setError(err.response?.data?.detail || 'Registration failed. Please check inputs.');
+      setError(err.response?.data?.detail || t('error_registration_failed'));
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export default function Register() {
                 required
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                placeholder="Ramesh Kumar Sharma"
+                placeholder={t('fullname_placeholder')}
                 className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
@@ -92,7 +92,7 @@ export default function Register() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="ramesh@gmail.com"
+                  placeholder={t('email_placeholder')}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>

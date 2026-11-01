@@ -567,11 +567,30 @@ async def fetch_live_pib_releases() -> List[Dict[str, Any]]:
 
     return ingested_items
 
-def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[str, Any]) -> Dict[str, Any]:
+DOC_LOCALIZATION = {
+    "Recent Electricity Bill": {"hi": "नवीनतम बिजली बिल", "ta": "சமீபத்திய மின் கட்டண ரசீது", "kn": "ಇತ್ತೀಚಿನ ವಿದ್ಯುತ್ ಬಿಲ್", "te": "ఇటీవలి విద్యుత్ బిల్లు"},
+    "Electricity Consumer Bill (recent)": {"hi": "नवीनतम बिजली बिल", "ta": "சமீபத்திய மின் கட்டண ரசீது", "kn": "ಇತ್ತೀಚಿನ ವಿದ್ಯುತ್ ಬಿಲ್", "te": "ఇటీవలి విద్యుత్ బిల్లు"},
+    "Aadhaar Card": {"hi": "आधार कार्ड", "ta": "ஆதார் அட்டை", "kn": "ಆಧಾರ್ ಕಾರ್ಡ್", "te": "ఆధార్ కార్డు"},
+    "Proof of Residential Address": {"hi": "आवासीय पता प्रमाण पत्र", "ta": "இருப்பிடச் சான்று", "kn": "ವಾಸಸ್ಥಳ ಪುರಾವೆ", "te": "నివాస ధృవీకరణ పత్రం"},
+    "Bank Passbook / Cancelled Cheque": {"hi": "बैंक पासबुक / रद्द चेक", "ta": "வங்கி பாஸ்புக் / காசோலை", "kn": "ಬ್ಯಾಂಕ್ ಪಾಸ್‌ಬುಕ್ / ರದ್ದು ಮಾಡಿದ ಚೆಕ್", "te": "బ్యాంక్ పాస్‌బుక్ / రద్దు చేసిన చెక్కు"},
+    "Rooftop Photograph": {"hi": "छत का फोटो", "ta": "மேற்கூரை புகைப்படம்", "kn": "ಛಾವಣಿಯ ಫೋಟೋ", "te": "పైకప్పు ఫోటో"},
+    "Landholding Records / RoR / Khasra-Khatauni": {"hi": "भूमि अभिलेख (खसरा-खतौनी)", "ta": "நில ஆவணங்கள் (பட்டா/சிட்டா)", "kn": "ಭೂ ದಾಖಲೆಗಳು (RTC)", "te": "భూమి రికార్డులు (పట్టాదారు పాస్‌బుక్)"},
+    "Active Bank Passbook": {"hi": "सक्रिय बैंक पासबुक", "ta": "செயலில் உள்ள வங்கி பாஸ்புக்", "kn": "ಸಕ್ರಿಯ ಬ್ಯಾಂಕ್ ಪಾಸ್‌ಬುಕ್", "te": "యాక్టివ్ బ్యాంక్ పాస్‌బుక్"},
+    "Mobile Number linked to Aadhaar": {"hi": "आधार लिंक मोबाइल नंबर", "ta": "ஆதார் இணைக்கப்பட்ட மொபைல் எண்", "kn": "ಆಧಾರ್ ಲಿಂಕ್ ಆದ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ", "te": "ఆధార్‌తో లింక్ అయిన మొబైల్ నంబర్"},
+    "Ration Card / Family ID": {"hi": "राशन कार्ड / परिवार आईडी", "ta": "ரேஷன் அட்டை / குடும்ப அட்டை", "kn": "ರೇಷನ್ ಕಾರ್ಡ್ / ಕುಟುಂಬ ಐಡಿ", "te": "రేషన్ కార్డు / ఫ్యామిలీ ఐడీ"},
+    "Caste Certificate": {"hi": "जाति प्रमाण पत्र", "ta": "ஜாதி சான்றிதழ்", "kn": "ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ", "te": "కుల ధృవీకరణ పత్రం"},
+    "Annual Family Income Certificate": {"hi": "वार्षिक पारिवारिक आय प्रमाण पत्र", "ta": "குடும்ப வருமான சான்றிதழ்", "kn": "ಕುಟುಂಬದ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ", "te": "కుటుంబ ఆదాయ ధృవీకరణ పత్రం"},
+    "Class 10/12 Marksheet": {"hi": "10वीं/12वीं अंकतालिका", "ta": "10/12 ஆம் வகுப்பு மதிப்பெண் பட்டியல்", "kn": "10/12 ನೇ ತರಗತಿ ಅಂಕಪಟ್ಟಿ", "te": "10వ/12వ తరగతి మార్కుల జాబితా"},
+    "College Admission Fee Receipt": {"hi": "कॉलेज प्रवेश शुल्क रसीद", "ta": "கல்லூரி கட்டண ரசீது", "kn": "ಕಾಲೇಜು ಪ್ರವೇಶ ಶುಲ್ಕ ರಶೀದಿ", "te": "కాలేజీ అడ్మిషన్ ఫీజు రసీదు"},
+    "Bank Passbook with Aadhaar Seeding": {"hi": "आधार से जुड़ा बैंक खाता पासबुक", "ta": "ஆதார் இணைக்கப்பட்ட வங்கி பாஸ்புக்", "kn": "ಆಧಾರ್ ಲಿಂಕ್ ಆದ ಬ್ಯಾಂಕ್ ಪಾಸ್‌ಬುಕ್", "te": "ఆధార్‌తో లింక్ అయిన బ్యాంక్ పాస్‌బుక్"}
+}
+
+def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[str, Any], language: str = "en") -> Dict[str, Any]:
     """
     Evaluates citizen's profile against scheme eligibility criteria.
-    Never guarantees eligibility based solely on AI.
+    Never guarantees eligibility based solely on AI. Returns fully localized criteria.
     """
+    lang = language if language in ["hi", "ta", "kn", "te", "en"] else "en"
     rules_raw = scheme_dict.get("eligibility_criteria_json") or "{}"
     try:
         rules = json.loads(rules_raw) if isinstance(rules_raw, str) else rules_raw
@@ -587,11 +606,32 @@ def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[
     user_state = profile_dict.get("state")
     if target_state and target_state != "all":
         if not user_state:
-            missing_info.append(f"State residency declaration required (State: {target_state})")
+            msg = {
+                "en": f"State residency declaration required (State: {target_state})",
+                "hi": f"राज्य निवास घोषणा आवश्यक है (राज्य: {target_state})",
+                "ta": f"மாநில இருப்பிட விவரம் தேவை (மாநிலம்: {target_state})",
+                "kn": f"ರಾಜ್ಯ ನಿವಾಸ ಘೋಷಣೆ ಅಗತ್ಯವಿದೆ (ರಾಜ್ಯ: {target_state})",
+                "te": f"రాష్ట్ర నివాస ధృవీకరణ అవసరం (రాష్ట్రం: {target_state})"
+            }[lang]
+            missing_info.append(msg)
         elif user_state.strip().lower() == target_state.strip().lower():
-            satisfied.append(f"Residency condition met ({target_state})")
+            msg = {
+                "en": f"Residency condition met ({target_state})",
+                "hi": f"निवास की शर्त पूरी हुई ({target_state})",
+                "ta": f"இருப்பிட நிபந்தனை பூர்த்தி செய்யப்பட்டது ({target_state})",
+                "kn": f"ನಿವಾಸದ ಷರತ್ತು ಪೂರೈಸಲಾಗಿದೆ ({target_state})",
+                "te": f"నివాస నిబంధన సంతృప్తి చెందింది ({target_state})"
+            }[lang]
+            satisfied.append(msg)
         else:
-            not_satisfied.append(f"Scheme restricted to residents of {target_state} (Declared state: {user_state})")
+            msg = {
+                "en": f"Scheme restricted to residents of {target_state} (Declared: {user_state})",
+                "hi": f"योजना केवल {target_state} के निवासियों के लिए है (घोषित: {user_state})",
+                "ta": f"இத்திட்டம் {target_state} மக்களுக்கு மட்டுமே பொருந்தும் (உங்கள் மாநிலம்: {user_state})",
+                "kn": f"ಯೋಜನೆ ಕೇವಲ {target_state} ನಿವಾಸಿಗಳಿಗೆ ಸೀಮಿತವಾಗಿದೆ (ಘೋಷಿತ: {user_state})",
+                "te": f"ఈ పథకం {target_state} నివాసితులకు మాత్రమే వర్తిస్తుంది (ప్రకటించిన రాష్ట్రం: {user_state})"
+            }[lang]
+            not_satisfied.append(msg)
 
     # 2. Age check
     user_age = profile_dict.get("age")
@@ -601,84 +641,220 @@ def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[
 
     if min_age is not None:
         if user_age is None:
-            missing_info.append(f"Age verification required (Minimum age: {min_age} years)")
+            msg = {
+                "en": f"Age verification required (Minimum age: {min_age} years)",
+                "hi": f"आयु सत्यापन आवश्यक है (न्यूनतम आयु: {min_age} वर्ष)",
+                "ta": f"வயது சரிபார்ப்பு தேவை (குறைந்தபட்ச வயது: {min_age} ஆண்டுகள்)",
+                "kn": f"ವಯಸ್ಸಿನ ಪರಿಶೀಲನೆ ಅಗತ್ಯವಿದೆ (ಕನಿಷ್ಠ ವಯಸ್ಸು: {min_age} ವರ್ಷಗಳು)",
+                "te": f"వయస్సు ధృవీకరణ అవసరం (కనీస వయస్సు: {min_age} సంవత్సరాలు)"
+            }[lang]
+            missing_info.append(msg)
         elif user_age >= min_age:
-            satisfied.append(f"Age criterion satisfied ({user_age} >= {min_age} years)")
+            msg = {
+                "en": f"Age criterion satisfied ({user_age} >= {min_age} years)",
+                "hi": f"आयु मानदंड पूरा हुआ ({user_age} >= {min_age} वर्ष)",
+                "ta": f"வயதுத் தகுதி பூர்த்தி செய்யப்பட்டது ({user_age} >= {min_age} ஆண்டுகள்)",
+                "kn": f"ವಯಸ್ಸಿನ ಮಾನದಂಡ ಪೂರೈಸಲಾಗಿದೆ ({user_age} >= {min_age} ವರ್ಷಗಳು)",
+                "te": f"వయస్సు నిబంధన సంతృప్తి చెందింది ({user_age} >= {min_age} సంవత్సరాలు)"
+            }[lang]
+            satisfied.append(msg)
         else:
-            not_satisfied.append(f"Does not meet minimum age of {min_age} years (Current age: {user_age})")
+            msg = {
+                "en": f"Does not meet minimum age of {min_age} years (Current age: {user_age})",
+                "hi": f"न्यूनतम आयु {min_age} वर्ष की शर्त पूरी नहीं (वर्तमान आयु: {user_age})",
+                "ta": f"குறைந்தபட்ச வயது {min_age} ஆண்டுகள் பூர்த்தியாகவில்லை (வயது: {user_age})",
+                "kn": f"ಕನಿಷ್ಠ ವಯಸ್ಸು {min_age} ವರ್ಷಗಳು ಪೂರೈಸಿಲ್ಲ (ಪ್ರಸ್ತುತ ವಯಸ್ಸು: {user_age})",
+                "te": f"కనీస వయస్సు {min_age} సంవత్సరాల నిబంధనను సంతృప్తి పరచలేదు (ప్రస్తుత వయస్సు: {user_age})"
+            }[lang]
+            not_satisfied.append(msg)
 
     if max_age is not None:
         if user_age is None:
-            if f"Age verification required (Minimum age: {min_age} years)" not in missing_info:
-                missing_info.append(f"Age verification required (Maximum age: {max_age} years)")
+            pass
         elif user_age <= max_age:
-            satisfied.append(f"Age is within maximum limit of {max_age} years")
+            msg = {
+                "en": f"Age is within maximum limit of {max_age} years",
+                "hi": f"आयु अधिकतम सीमा {max_age} वर्ष के भीतर है",
+                "ta": f"அனுமதிக்கப்பட்ட வயது வரம்பிற்குள் ({max_age} ஆண்டுகள்) உள்ளது",
+                "kn": f"ವಯಸ್ಸು ಗರಿಷ್ಠ ಮಿತಿ {max_age} ವರ್ಷಗಳ ಒಳಗಿದೆ",
+                "te": f"వయస్సు గరిష్ట పరిమితి {max_age} సంవత్సరాల లోపు ఉంది"
+            }[lang]
+            satisfied.append(msg)
         else:
-            not_satisfied.append(f"Exceeds maximum age limit of {max_age} years (Current age: {user_age})")
+            msg = {
+                "en": f"Exceeds maximum age limit of {max_age} years (Current age: {user_age})",
+                "hi": f"अधिकतम आयु सीमा {max_age} वर्ष से अधिक है (वर्तमान आयु: {user_age})",
+                "ta": f"அதிகபட்ச வயது வரம்பை ({max_age} ஆண்டுகள்) தாண்டியுள்ளது (வயது: {user_age})",
+                "kn": f"ಗರಿಷ್ಠ ವಯಸ್ಸಿನ ಮಿತಿ {max_age} ವರ್ಷವನ್ನು ಮೀರಿದೆ (ಪ್ರಸ್ತುತ ವಯಸ್ಸು: {user_age})",
+                "te": f"గరిష్ట వయస్సు పరిమితి {max_age} సంవత్సరాలను మించింది (ప్రస్తుత వయస్సు: {user_age})"
+            }[lang]
+            not_satisfied.append(msg)
 
     # 3. Income check
     user_income = profile_dict.get("annual_income")
     max_income = rules.get("max_income")
     if max_income is not None:
         if user_income is None:
-            missing_info.append(f"Annual household income details required (Income cap: ₹{max_income:,.0f})")
+            msg = {
+                "en": f"Annual household income details required (Income cap: ₹{max_income:,.0f})",
+                "hi": f"वार्षिक पारिवारिक आय विवरण आवश्यक है (आय सीमा: ₹{max_income:,.0f})",
+                "ta": f"குடும்ப ஆண்டு வருமான விவரம் தேவை (வருமான வரம்பு: ₹{max_income:,.0f})",
+                "kn": f"ವಾರ್ಷಿಕ ಕುಟುಂಬ ಆದಾಯದ ವಿವರಗಳು ಅಗತ್ಯವಿದೆ (ಆದಾಯ ಮಿತಿ: ₹{max_income:,.0f})",
+                "te": f"వార్షిక కుటుంబ ఆదాయ వివరాలు అవసరం (గరిష్ట పరిమితి: ₹{max_income:,.0f})"
+            }[lang]
+            missing_info.append(msg)
         elif user_income <= max_income:
-            satisfied.append(f"Annual income ₹{user_income:,.0f} satisfies income ceiling of ₹{max_income:,.0f}")
+            msg = {
+                "en": f"Annual income ₹{user_income:,.0f} satisfies income ceiling of ₹{max_income:,.0f}",
+                "hi": f"वार्षिक आय ₹{user_income:,.0f} आय सीमा ₹{max_income:,.0f} के अंतर्गत है",
+                "ta": f"ஆண்டு வருமானம் ₹{user_income:,.0f} அனுமதிக்கப்பட்ட வரம்பிற்குள் (₹{max_income:,.0f}) உள்ளது",
+                "kn": f"ವಾರ್ಷಿಕ ಆದಾಯ ₹{user_income:,.0f} ಆದಾಯ ಮಿತಿ ₹{max_income:,.0f} ಒಳಗೆ ಇದೆ",
+                "te": f"వార్షిక ఆదాయం ₹{user_income:,.0f} ఆదాయ పరిమితి ₹{max_income:,.0f} లోపు ఉంది"
+            }[lang]
+            satisfied.append(msg)
         else:
             if special_age and user_age and user_age >= special_age:
-                satisfied.append(f"Eligible under Senior Citizen Universal Inclusion (Age {user_age} >= {special_age})")
+                msg = {
+                    "en": f"Eligible under Senior Citizen Universal Inclusion (Age {user_age} >= {special_age})",
+                    "hi": f"वरिष्ठ नागरिक सार्वभौमिक समावेश के तहत पात्र (आयु {user_age} >= {special_age})",
+                    "ta": f"மூத்த குடிமக்கள் சிறப்பு விதியின் கீழ் தகுதி பெறுகிறது (வயது {user_age} >= {special_age})",
+                    "kn": f"ಹಿರಿಯ ನಾಗರಿಕರ ಸಾರ್ವತ್ರಿಕ ನಿಯಮದಡಿಯಲ್ಲಿ ಅರ್ಹತೆ (ವಯಸ್ಸು {user_age} >= {special_age})",
+                    "te": f"సీనియర్ సిటిజన్ సార్వత్రిక నిబంధన ప్రకారం అర్హులు (వయస్సు {user_age} >= {special_age})"
+                }[lang]
+                satisfied.append(msg)
             else:
-                not_satisfied.append(f"Annual income ₹{user_income:,.0f} exceeds maximum threshold of ₹{max_income:,.0f}")
+                msg = {
+                    "en": f"Annual income ₹{user_income:,.0f} exceeds maximum threshold of ₹{max_income:,.0f}",
+                    "hi": f"वार्षिक आय ₹{user_income:,.0f} अधिकतम सीमा ₹{max_income:,.0f} से अधिक है",
+                    "ta": f"ஆண்டு வருமானம் ₹{user_income:,.0f} அனுமதிக்கப்பட்ட வரம்பை (₹{max_income:,.0f}) விட அதிகமாக உள்ளது",
+                    "kn": f"ವಾರ್ಷಿಕ ಆದಾಯ ₹{user_income:,.0f} ಗರಿಷ್ಠ ಮಿತಿ ₹{max_income:,.0f} ಕ್ಕಿಂತ ಹೆಚ್ಚಾಗಿದೆ",
+                    "te": f"వార్షిక ఆదాయం ₹{user_income:,.0f} గరిష్ట పరిమితి ₹{max_income:,.0f} కంటే ఎక్కువ ఉంది"
+                }[lang]
+                not_satisfied.append(msg)
 
-    # 4. Category check (SC/ST/OBC/General)
+    # 4. Category check
     user_cat = profile_dict.get("category")
     allowed_categories = rules.get("categories")
     if allowed_categories:
         if not user_cat:
-            missing_info.append(f"Social category declaration required (Applicable categories: {', '.join(allowed_categories)})")
+            msg = {
+                "en": f"Social category declaration required (Applicable: {', '.join(allowed_categories)})",
+                "hi": f"सामाजिक श्रेणी घोषणा आवश्यक है (लागू: {', '.join(allowed_categories)})",
+                "ta": f"சமூகப் பிரிவு அறிவிப்பு தேவை (பொருந்தக்கூடியவை: {', '.join(allowed_categories)})",
+                "kn": f"ಸಾಮಾಜಿಕ ವರ್ಗದ ಘೋಷಣೆ ಅಗತ್ಯವಿದೆ (ಅನ್ವಯವಾಗುವ ವರ್ಗಗಳು: {', '.join(allowed_categories)})",
+                "te": f"సామాజిక వర్గ వివరాలు అవసరం (వర్తించేవి: {', '.join(allowed_categories)})"
+            }[lang]
+            missing_info.append(msg)
         elif user_cat in allowed_categories:
-            satisfied.append(f"Category '{user_cat}' meets reservation/target requirements")
+            msg = {
+                "en": f"Category '{user_cat}' meets reservation/target requirements",
+                "hi": f"श्रेणी '{user_cat}' पात्रता और आरक्षण मानदंडों को पूरा करती है",
+                "ta": f"பிரிவு '{user_cat}' தகுதி நிபந்தனைகளை பூர்த்தி செய்கிறது",
+                "kn": f"ವರ್ಗ '{user_cat}' ಮೀಸಲಾತಿ/ಉದ್ದೇಶಿತ ಷರತ್ತುಗಳನ್ನು ಪೂರೈಸುತ್ತದೆ",
+                "te": f"వర్గం '{user_cat}' రిజర్వేషన్/లక్ష్య నిబంధనలను సంతృప్తి పరుస్తుంది"
+            }[lang]
+            satisfied.append(msg)
         else:
-            not_satisfied.append(f"Category '{user_cat}' is not covered under this specific targeted scheme")
+            msg = {
+                "en": f"Category '{user_cat}' is not covered under this specific targeted scheme",
+                "hi": f"श्रेणी '{user_cat}' इस विशिष्ट लक्षित योजना के अंतर्गत शामिल नहीं है",
+                "ta": f"பிரிவு '{user_cat}' இத்திட்டத்தின் கீழ் உள்ளடக்கப்படவில்லை",
+                "kn": f"ವರ್ಗ '{user_cat}' ಈ ನಿರ್ದಿಷ್ಟ ಯೋಜನೆಯಡಿ ಸೇರ್ಪಡೆಗೊಂಡಿಲ್ಲ",
+                "te": f"వర్గం '{user_cat}' ఈ నిర్దిష్ట పథకం కింద కవర్ చేయబడలేదు"
+            }[lang]
+            not_satisfied.append(msg)
 
-    # 5. Occupation / Employment
+    # 5. Occupation check
     target_occ = rules.get("occupation")
     user_occ = profile_dict.get("occupation", "").lower()
-    user_emp = profile_dict.get("employment_status", "").lower()
-    if target_occ:
-        if target_occ == "farmer":
-            if "farm" in user_occ or "agr" in user_occ:
-                satisfied.append("Agricultural occupation condition met")
-            elif not user_occ:
-                missing_info.append("Occupation details required (Target: Farmer / Cultivator)")
-            else:
-                not_satisfied.append(f"Occupation '{user_occ}' does not match target agricultural criterion")
-        elif target_occ == "artisan":
-            if any(w in user_occ for w in ["artisan", "craft", "carpenter", "blacksmith", "goldsmith", "potter", "weaver"]):
-                satisfied.append("Traditional artisan trade verified")
-            elif not user_occ:
-                missing_info.append("Trade/artisan occupation details required")
-            else:
-                not_satisfied.append(f"Occupation '{user_occ}' is not an empanelled traditional trade")
+    if target_occ == "farmer":
+        if "farm" in user_occ or "agr" in user_occ or "రైతు" in user_occ or "किसान" in user_occ or "உழவர்" in user_occ or "ರೈತ" in user_occ:
+            msg = {
+                "en": "Agricultural occupation condition met",
+                "hi": "कृषि व्यवसाय शर्त पूरी हुई",
+                "ta": "விவசாயத் தொழில் நிபந்தனை பூர்த்தி செய்யப்பட்டது",
+                "kn": "ಕೃಷಿ ಕಸುಬಿನ ಷರತ್ತು ಪೂರೈಸಲಾಗಿದೆ",
+                "te": "వ్యవసాయ వృత్తి నిబంధన సంతృప్తి చెందింది"
+            }[lang]
+            satisfied.append(msg)
+        elif not user_occ:
+            msg = {
+                "en": "Occupation details required (Target: Farmer / Cultivator)",
+                "hi": "व्यवसाय विवरण आवश्यक है (लक्षित: किसान)",
+                "ta": "தொழில் விவரம் தேவை (இலக்கு: விவசாயி)",
+                "kn": "ಕಸುಬಿನ ವಿವರ ಅಗತ್ಯವಿದೆ (ಗುರಿ: ರೈತ)",
+                "te": "వృత్తి వివరాలు అవసరం (లక్ష్యం: రైతు)"
+            }[lang]
+            missing_info.append(msg)
+    elif target_occ == "artisan":
+        if any(w in user_occ for w in ["artisan", "craft", "carpenter", "blacksmith", "goldsmith", "potter", "weaver", "कारीगर", "கைவினை", "ಕುಶಲಕರ್ಮಿ", "చేతివృత్తి"]):
+            msg = {
+                "en": "Traditional artisan trade verified",
+                "hi": "पारंपरिक कारीगर व्यवसाय सत्यापित",
+                "ta": "பாரம்பரிய கைவினைத் தொழில் சரிபார்க்கப்பட்டது",
+                "kn": "ಸಾಂಪ್ರದಾಯಿಕ ಕುಶಲಕರ್ಮಿ ಕಸುಬು ಪರಿಶೀಲಿಸಲಾಗಿದೆ",
+                "te": "సాంప్రదాయ చేతివృత్తి ధృవీకరించబడింది"
+            }[lang]
+            satisfied.append(msg)
+        elif not user_occ:
+            msg = {
+                "en": "Trade/artisan occupation details required",
+                "hi": "शिल्प/कारीगर व्यवसाय विवरण आवश्यक है",
+                "ta": "கைவினைத் தொழில் விவரம் தேவை",
+                "kn": "ಕುಶಲಕರ್ಮಿ ಕಸುಬಿನ ವಿವರ ಅಗತ್ಯವಿದೆ",
+                "te": "చేతివృత్తి వివరాలు అవసరం"
+            }[lang]
+            missing_info.append(msg)
 
     # Final Outcome Assessment
     if not_satisfied:
-        outcome = "Not eligible based on a verified mandatory condition"
+        outcome = {
+            "en": "Not eligible based on criteria",
+            "hi": "मानदंडों के आधार पर पात्र नहीं",
+            "ta": "நிபந்தனைகளின் அடிப்படையில் தகுதியற்றது",
+            "kn": "ಮಾನದಂಡಗಳ ಆಧಾರದ ಮೇಲೆ ಅರ್ಹರಲ್ಲ",
+            "te": "నిబంధనల ప్రకారం అర్హత లేదు"
+        }[lang]
     elif missing_info:
-        outcome = "Additional information required"
+        outcome = {
+            "en": "Additional information required",
+            "hi": "अतिरिक्त जानकारी आवश्यक है",
+            "ta": "கூடுதல் தகவல்கள் தேவை",
+            "kn": "ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿ ಅಗತ್ಯವಿದೆ",
+            "te": "మరింత సమాచారం అవసరం"
+        }[lang]
     else:
-        outcome = "Potentially eligible"
+        outcome = {
+            "en": "Potentially eligible",
+            "hi": "संभावित रूप से पात्र",
+            "ta": "தகுதி பெற வாய்ப்புள்ளது",
+            "kn": "ಅರ್ಹತೆ ಹೊಂದುವ ಸಾಧ್ಯತೆಯಿದೆ",
+            "te": "అర్హత పొందే అవకాశం ఉంది"
+        }[lang]
+
+    # Localize raw document names
+    raw_docs = json.loads(scheme_dict.get("required_documents_json") or "[]")
+    localized_docs = []
+    for doc in raw_docs:
+        doc_tr = DOC_LOCALIZATION.get(doc, {}).get(lang, doc)
+        localized_docs.append(doc_tr)
+
+    # Localize scheme title
+    orig_title = scheme_dict.get("title", "")
+    from app.services.scheme_translations import get_localized_scheme_attributes
+    loc_attrs = get_localized_scheme_attributes(orig_title, lang)
+    scheme_name = loc_attrs.get("title", orig_title) if loc_attrs else orig_title
 
     return {
         "scheme_id": scheme_dict.get("id"),
-        "scheme_name": scheme_dict.get("title"),
+        "scheme_name": scheme_name,
         "official_source": scheme_dict.get("source_url"),
         "official_application_url": scheme_dict.get("official_portal_url"),
         "outcome": outcome,
-        "benefits": scheme_dict.get("benefits_description"),
+        "benefits": loc_attrs.get("benefits_description", scheme_dict.get("benefits_description")),
         "conditions_satisfied": satisfied,
         "conditions_not_satisfied": not_satisfied,
         "missing_information": missing_info,
-        "required_documents": json.loads(scheme_dict.get("required_documents_json") or "[]"),
-        "deadline": scheme_dict.get("deadline", "Refer to official notification")
+        "required_documents": localized_docs,
+        "deadline": loc_attrs.get("deadline", scheme_dict.get("deadline", "Refer to official notification"))
     }

@@ -3,8 +3,9 @@ import axios from 'axios';
 import { Volume2, Play, Pause, RotateCcw, FastForward, Square, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function VoicePlayer({ text, audioUrl: initialAudioUrl, title = 'Audio Narration' }) {
-  const { language } = useLanguage();
+export default function VoicePlayer({ text, audioUrl: initialAudioUrl, title }) {
+  const { language, t } = useLanguage();
+  const displayTitle = title || t('audio_narration_title');
   const [audioUrl, setAudioUrl] = useState(initialAudioUrl);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -118,7 +119,7 @@ export default function VoicePlayer({ text, audioUrl: initialAudioUrl, title = '
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
           <Volume2 size={16} className="text-amber-400" />
-          <span className="text-xs font-semibold text-slate-200">{title}</span>
+          <span className="text-xs font-semibold text-slate-200">{displayTitle}</span>
           <span className="text-[10px] bg-slate-700 text-slate-300 px-1.5 py-0.2 rounded font-mono uppercase">
             {language}
           </span>
@@ -146,7 +147,7 @@ export default function VoicePlayer({ text, audioUrl: initialAudioUrl, title = '
               className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition disabled:opacity-50"
             >
               {loading ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
-              <span>Play</span>
+              <span>{t('audio_play')}</span>
             </button>
           ) : (
             <button
@@ -154,14 +155,14 @@ export default function VoicePlayer({ text, audioUrl: initialAudioUrl, title = '
               className="bg-amber-600 hover:bg-amber-500 text-white p-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition"
             >
               <Pause size={14} />
-              <span>Pause</span>
+              <span>{t('audio_pause')}</span>
             </button>
           )}
 
           <button
             onClick={handleStop}
             className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition"
-            title="Stop"
+            title={t('audio_stop')}
           >
             <Square size={14} />
           </button>
@@ -169,7 +170,7 @@ export default function VoicePlayer({ text, audioUrl: initialAudioUrl, title = '
           <button
             onClick={handleReplay}
             className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition"
-            title="Replay"
+            title={t('audio_replay')}
           >
             <RotateCcw size={14} />
           </button>

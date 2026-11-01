@@ -101,7 +101,7 @@ export default function AdminDashboard() {
       fetchAdminData();
     } catch (err) {
       console.error('Update status error:', err);
-      alert('Failed to update status.');
+      alert(t('alert_update_status_failed'));
     } finally {
       setUpdating(false);
     }
@@ -130,6 +130,38 @@ export default function AdminDashboard() {
       case 'Low': return t('sev_low');
       default: return sev;
     }
+  };
+
+  const getGrievanceCategoryLabel = (cat) => {
+    switch (cat) {
+      case 'Potholes': return t('cat_potholes');
+      case 'Road cracks': return t('cat_road_cracks');
+      case 'Damaged roads': return t('cat_damaged_roads');
+      case 'Water leakage': return t('cat_water_leakage');
+      case 'Waterlogging': return t('cat_waterlogging');
+      case 'Drainage problems': return t('cat_drainage');
+      case 'Garbage accumulation': return t('cat_garbage');
+      case 'Overflowing dustbins': return t('cat_dustbins');
+      case 'Broken streetlights': return t('cat_streetlights');
+      case 'Damaged bridges': return t('cat_bridges');
+      case 'Open manholes': return t('cat_manholes');
+      case 'Fallen trees': return t('cat_fallen_trees');
+      case 'Electrical hazards': return t('cat_electrical');
+      case 'Other infrastructure': return t('cat_other_infra');
+      default: return cat;
+    }
+  };
+
+  const getGrievanceDeptLabel = (dept) => {
+    if (!dept) return '';
+    const d = dept.toLowerCase();
+    if (d.includes('road') || d.includes('public works') || d.includes('pwd')) return t('dept_pwd');
+    if (d.includes('water') || d.includes('sewerage')) return t('dept_water');
+    if (d.includes('sanitation') || d.includes('waste')) return t('dept_sanitation');
+    if (d.includes('drainage') || d.includes('flood')) return t('dept_drainage');
+    if (d.includes('electric') || d.includes('lighting')) return t('dept_electric');
+    if (d.includes('forest') || d.includes('park')) return t('dept_parks');
+    return dept;
   };
 
   if (!isOfficerOrAdmin()) {
@@ -272,9 +304,9 @@ export default function AdminDashboard() {
                 <p className="text-xs text-slate-600 line-clamp-1">{g.description}</p>
 
                 <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pt-1">
-                  <span>{t('category_prefix')} <strong className="text-slate-700">{g.category}</strong></span>
+                  <span>{t('category_prefix')} <strong className="text-slate-700">{getGrievanceCategoryLabel(g.category)}</strong></span>
                   <span>•</span>
-                  <span>{t('dept_prefix')} <strong className="text-slate-700">{g.department}</strong></span>
+                  <span>{t('dept_prefix')} <strong className="text-slate-700">{getGrievanceDeptLabel(g.department)}</strong></span>
                   <span>•</span>
                   <span>{t('citizen_prefix')} {g.author_name}</span>
                 </div>

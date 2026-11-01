@@ -90,7 +90,7 @@ export default function Profile() {
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
       console.error('Save profile error:', err);
-      alert('Failed to update profile.');
+      alert(t('alert_profile_update_failed'));
     } finally {
       setSaving(false);
     }
@@ -204,7 +204,7 @@ export default function Profile() {
               type="number"
               value={formData.age}
               onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-              placeholder="e.g. 29"
+              placeholder={t('placeholder_age')}
               className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             />
           </div>
@@ -228,7 +228,7 @@ export default function Profile() {
               type="text"
               value={formData.state}
               onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-              placeholder="e.g. Telangana, Uttar Pradesh, Tamil Nadu"
+              placeholder={t('placeholder_state')}
               className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             />
           </div>
@@ -239,7 +239,7 @@ export default function Profile() {
               type="text"
               value={formData.district}
               onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-              placeholder="e.g. Hyderabad, Lucknow, Chennai"
+              placeholder={t('placeholder_district')}
               className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             />
           </div>
@@ -250,7 +250,7 @@ export default function Profile() {
               type="number"
               value={formData.annual_income}
               onChange={(e) => setFormData({ ...formData, annual_income: e.target.value })}
-              placeholder="e.g. 240000"
+              placeholder={t('placeholder_income')}
               className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             />
           </div>
@@ -262,11 +262,11 @@ export default function Profile() {
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             >
-              <option value="General">General</option>
-              <option value="OBC">OBC (Other Backward Classes)</option>
-              <option value="SC">SC (Scheduled Caste)</option>
-              <option value="ST">ST (Scheduled Tribe)</option>
-              <option value="EWS">EWS</option>
+              <option value="General">{t('cat_general')}</option>
+              <option value="OBC">{t('cat_obc')}</option>
+              <option value="SC">{t('cat_sc')}</option>
+              <option value="ST">{t('cat_st')}</option>
+              <option value="EWS">{t('cat_ews')}</option>
             </select>
           </div>
 

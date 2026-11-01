@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { LanguageProvider } from './context/LanguageContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 import Navbar from './components/Navbar';
@@ -21,8 +21,9 @@ import Register from './pages/Register';
 
 function ProtectedRoute({ children, officerOnly = false }) {
   const { user, loading, isOfficerOrAdmin } = useAuth();
+  const { t } = useLanguage();
   if (loading) {
-    return <div className="p-8 text-center text-slate-500 font-medium">Loading user session...</div>;
+    return <div className="p-8 text-center text-slate-500 font-medium">{t('loading_session')}</div>;
   }
   if (!user) {
     return <Navigate to="/login" replace />;

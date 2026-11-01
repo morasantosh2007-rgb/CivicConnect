@@ -3,6 +3,7 @@ import re
 from typing import Dict, Any, List, Optional
 from app.core.config import settings
 from app.services.translation_service import translate_text
+from app.services.scheme_translations import get_localized_scheme_attributes
 
 # Friendly conversational greetings & small talk patterns
 GREETINGS_PATTERNS = [
@@ -114,15 +115,15 @@ async def ask_gemini_or_grounded_rag(
         for i, doc in enumerate(context_documents[:5])
     ])
 
-    citations = [
-        {
-            "title": doc.get("title", "Official Government Source"),
+    citations = []
+    for doc in context_documents[:5]:
+        loc = get_localized_scheme_attributes(doc.get("title", ""), user_language)
+        citations.append({
+            "title": loc["title"],
             "url": doc.get("source_url") or doc.get("official_portal_url", "https://india.gov.in"),
-            "department": doc.get("department", "Government of India"),
-            "excerpt": (doc.get("original_text") or doc.get("summary_en", ""))[:200]
-        }
-        for doc in context_documents[:5]
-    ]
+            "department": loc["department"],
+            "excerpt": (doc.get(f"summary_{user_language}") or doc.get("original_text") or doc.get("summary_en", ""))[:200]
+        })
 
     # 2. If Gemini API Key is configured, use Gemini 2.5 Flash with rich conversational instructions
     if api_key:
@@ -159,7 +160,6 @@ async def ask_gemini_or_grounded_rag(
             print(f"[Gemini API Notice] {e}, falling back to conversational RAG engine")
 
     # 3. Conversational Local Fallback (When API key is pending)
-    # Check if this is a general question or policy question
     policy_keywords = [
         "scheme", "policy", "subsidy", "yojana", "pension", "scholarship", "loan", "farmer",
         "kisan", "solar", "hospital", "ayushman", "pothole", "water", "leak", "grievance",
@@ -168,16 +168,39 @@ async def ask_gemini_or_grounded_rag(
     is_policy_query = any(k in clean_p.lower() for k in policy_keywords)
 
     if not is_policy_query or not context_documents:
-        # User asked a general question unrelated to policies (e.g. "what is today's weather", "tell me something interesting", "what is digital governance?")
-        conversational_answer = (
-            f"Hello! I am your CivicConnect assistant. You asked: \"{clean_p}\".\n\n"
-            "While my primary expertise is helping you with Indian government welfare schemes, civic complaints, and official fact-checking, "
-            "I'm here to assist you with anything you need! "
-            "Feel free to ask me how to apply for schemes like PM Surya Ghar, report civic issues in your neighborhood, or verify news."
-        )
-        if user_language != "en":
-            conversational_answer = translate_text(conversational_answer, target_lang=user_language)
-
+        general_templates = {
+            "en": (
+                f"Hello! I am your CivicConnect Citizen Governance Assistant. You asked: \"{clean_p}\".\n\n"
+                "I'm here to assist you with anything you need! "
+                "You can ask me how to apply for welfare schemes (like PM Surya Ghar, Ayushman Bharat, Scholarships), "
+                "report municipal issues in your neighborhood, or verify news and government announcements in your regional language."
+            ),
+            "hi": (
+                f"नमस्ते! मैं आपका सिविक कनेक्ट (CivicConnect) सहायक हूँ। आपने पूछा: \"{clean_p}\"।\n\n"
+                "मैं आपकी हर संभव सहायता के लिए तत्पर हूँ! "
+                "आप मुझसे भारत सरकार की कल्याणकारी योजनाओं (जैसे पीएम सूर्य घर, किसान योजना, छात्रवृत्ति), "
+                "अपने क्षेत्र की नागरिक शिकायतों या आधिकारिक समाचारों के सत्यापन के बारे में बेझिझक पूछ सकते हैं।"
+            ),
+            "te": (
+                f"నమస్కారం! నేను మీ సివిక్ కనెక్ట్ (CivicConnect) పౌర సహాయకుడిని. మీరు అడిగారు: \"{clean_p}\".\n\n"
+                "మీకు సహాయం చేయడానికి నేను ఎల్లప్పుడూ సిద్ధంగా ఉన్నాను! "
+                "మీరు ప్రభుత్వ సంక్షేమ పథకాలు (పీఎం సూర్య ఘర్, ఆయుష్మాన్ భారత్, స్కాలర్‌షిప్‌లు), "
+                "మీ ప్రాంతంలోని పౌర సమస్యల పరిష్కారం లేదా అధికారిక సమాచార నిర్ధారణ గురించి నన్ను అడగవచ్చు."
+            ),
+            "ta": (
+                f"வணக்கம்! நான் உங்கள் சிவிக் கனெக்ட் (CivicConnect) குடிமக்கள் உதவியாளர். நீங்கள் கேட்டது: \"{clean_p}\".\n\n"
+                "உங்களுக்கு உதவ நான் எப்போதும் தயாராக உள்ளேன்! "
+                "அரசு நலத்திட்டங்கள் (பிஎம் சூர்ய கர், ஆயுஷ்மான் பாரத், கல்வி உதவித்தொகை), "
+                "உங்கள் பகுதி குடிமைப் புகார்கள் அல்லது அரசு செய்திகளின் உண்மைத்தன்மையை சரிபார்ப்பது பற்றி நீங்கள் என்னிடம் கேட்கலாம்."
+            ),
+            "kn": (
+                f"ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಸಿವಿಕ್ ಕನೆಕ್ಟ್ (CivicConnect) ನಾಗರಿಕ ಸಹಾಯಕ. ನೀವು ಕೇಳಿದ್ದು: \"{clean_p}\".\n\n"
+                "ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ನಾನು ಸದಾ ಸಿದ್ಧನಾಗಿದ್ದೇನೆ! "
+                "ನೀವು ಸರ್ಕಾರಿ ಕಲ್ಯಾಣ ಯೋಜನೆಗಳು (ಪಿಎಂ ಸೂರ್ಯ ಘರ್, ಆಯುಷ್ಮಾನ್ ಭಾರತ್, ವಿದ್ಯಾರ್ಥಿವೇತನಗಳು), "
+                "ನಿಮ್ಮ ಪ್ರದೇಶದ ನಾಗರಿಕ ದೂರುಗಳು ಅಥವಾ ಅಧಿಕೃತ ಸತ್ಯಶೋಧನೆಯ ಬಗ್ಗೆ ನನ್ನೊಂದಿಗೆ ಸಂವಹನ ನಡೆಸಬಹುದು."
+            )
+        }
+        conversational_answer = general_templates.get(user_language, general_templates["en"])
         return {
             "answer": conversational_answer,
             "citations": [],
@@ -187,20 +210,46 @@ async def ask_gemini_or_grounded_rag(
 
     # If it is a policy query and we have matching documents:
     top_doc = context_documents[0]
-    title = top_doc.get("title", "Official Policy")
-    dept = top_doc.get("department", "Government Department")
-    benefits = top_doc.get("benefits_description") or top_doc.get("summary_en", "")
-    portal = top_doc.get("official_portal_url") or top_doc.get("source_url", "")
+    loc_attrs = get_localized_scheme_attributes(top_doc.get("title", ""), user_language)
+    title = loc_attrs["title"]
+    dept = loc_attrs["department"]
+    benefits = loc_attrs["benefits_description"] or top_doc.get(f"summary_{user_language}") or top_doc.get("benefits_description") or top_doc.get("summary_en", "")
+    portal = top_doc.get("official_portal_url") or top_doc.get("source_url", "https://india.gov.in")
 
-    synthesized_answer = (
-        f"Here is the official information regarding **{title}** from the {dept}:\n\n"
-        f"**Overview & Benefits:** {benefits}\n\n"
-        f"**Official Portal:** {portal}\n\n"
-        f"You can check your detailed eligibility on our Policies & Schemes page or file a service request through the portal."
-    )
+    policy_templates = {
+        "en": (
+            f"Here is the official information regarding **{title}** from the {dept}:\n\n"
+            f"**Overview & Benefits:** {benefits}\n\n"
+            f"**Official Portal:** {portal}\n\n"
+            f"You can check your detailed eligibility on our Policies & Schemes page or initiate an autonomous service application."
+        ),
+        "hi": (
+            f"यहाँ {dept} की ओर से **{title}** की आधिकारिक जानकारी दी गई है:\n\n"
+            f"**योजना का विवरण एवं लाभ:** {benefits}\n\n"
+            f"**आधिकारिक पोर्टल:** {portal}\n\n"
+            f"आप नीतियां एवं योजनाएं पृष्ठ पर विस्तृत पात्रता देख सकते हैं अथवा सेवा आवेदन शुरू कर सकते हैं।"
+        ),
+        "te": (
+            f"{dept} నుండి **{title}** గురించిన అధికారిక సమాచారం ఇక్కడ ఉంది:\n\n"
+            f"**పథకం వివరణ మరియు ప్రయోజనాలు:** {benefits}\n\n"
+            f"**అధికారిక పోర్టల్:** {portal}\n\n"
+            f"వివరమైన అర్హతను మీరు విధానాలు & పథకాలు పేజీలో తనిఖీ చేయవచ్చు లేదా సేవా దరఖాస్తును ప్రారంభించవచ్చు."
+        ),
+        "ta": (
+            f"{dept} வழங்கிய **{title}** பற்றிய அதிகாரப்பூர்வ தகவல் இதோ:\n\n"
+            f"**திட்ட கண்ணோட்டம் & பலன்கள்:** {benefits}\n\n"
+            f"**அதிகாரப்பூர்வ தளம்:** {portal}\n\n"
+            f"திட்டங்கள் பக்கத்தில் உங்கள் தகுதியை சரிபார்க்கலாம் அல்லது சேவை விண்ணப்பத்தை தொடங்கலாம்."
+        ),
+        "kn": (
+            f"{dept} ಇಲಾಖೆಯಿಂದ **{title}** ಬಗೆಗಿನ ಅಧಿಕೃತ ಮಾಹಿತಿ ಇಲ್ಲಿದೆ:\n\n"
+            f"**ಯೋಜನೆಯ ವಿವರ ಮತ್ತು ಸೌಲಭ್ಯಗಳು:** {benefits}\n\n"
+            f"**ಅಧಿಕೃತ ಪೋರ್ಟಲ್:** {portal}\n\n"
+            f"ನೀವು ನೀತಿಗಳು ಮತ್ತು ಯೋಜನೆಗಳ ಪುಟದಲ್ಲಿ ವಿವರವಾದ ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸಬಹುದು ಅಥವಾ ಅರ್ಜಿ ಸಲ್ಲಿಸಬಹುದು."
+        )
+    }
 
-    if user_language != "en":
-        synthesized_answer = translate_text(synthesized_answer, target_lang=user_language)
+    synthesized_answer = policy_templates.get(user_language, policy_templates["en"])
 
     return {
         "answer": synthesized_answer,
