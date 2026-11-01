@@ -7,23 +7,11 @@ import {
   MapPin,
   Mic,
   MicOff,
-  Upload,
-  Image as ImageIcon,
   CheckCircle2,
-  Clock,
-  Send,
   Building,
-  AlertCircle,
   Sparkles,
-  Search,
-  Filter,
-  Eye,
   Camera,
-  Play,
-  Pause,
-  Layers,
-  ShieldCheck,
-  ChevronDown
+  Send
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -34,7 +22,7 @@ export default function Grievances() {
 
   const [grievances, setGrievances] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState('latest'); // latest, top_voted, severity
+  const [sortBy, setSortBy] = useState('latest');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [search, setSearch] = useState('');
 
@@ -109,7 +97,6 @@ export default function Grievances() {
     }
   };
 
-  // Geolocation Auto-Detect
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser.');
@@ -131,7 +118,6 @@ export default function Grievances() {
     );
   };
 
-  // Browser Audio Recording (MediaRecorder)
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -267,18 +253,18 @@ export default function Grievances() {
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Header & Controls */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      {/* Header & Controls — Government Light Theme */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 text-xs font-semibold text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/60 mb-2">
-              <AlertTriangle size={13} />
-              <span>Problem Statement 2 — Transparent Community Triage</span>
+            <div className="inline-flex items-center space-x-2 text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 mb-2">
+              <AlertTriangle size={13} className="text-amber-700" />
+              <span>Transparent Civic Grievance Triage</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
               {t('nav_grievances')}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
               Community-driven civic issue feed with real-time computer vision analysis, multimodal severity triage, and automated departmental routing.
             </p>
           </div>
@@ -288,15 +274,15 @@ export default function Grievances() {
               setSubmissionResult(null);
               setShowSubmitModal(true);
             }}
-            className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-lg shadow-amber-950/40 transition flex items-center space-x-2"
+            className="bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-xs transition flex items-center space-x-2"
           >
             <Camera size={16} />
             <span>Report Civic Problem</span>
           </button>
         </div>
 
-        {/* Filters and Sorting (Reddit Style) */}
-        <div className="mt-6 pt-6 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        {/* Filters and Sorting */}
+        <div className="mt-6 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-2 overflow-x-auto text-xs">
             <span className="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Sort:</span>
             {[
@@ -307,10 +293,10 @@ export default function Grievances() {
               <button
                 key={s.id}
                 onClick={() => setSortBy(s.id)}
-                className={`px-3 py-1.5 rounded-xl font-semibold border transition ${
+                className={`px-3 py-1.5 rounded-xl font-semibold border transition shadow-xs ${
                   sortBy === s.id
-                    ? 'bg-blue-600 text-white border-blue-500'
-                    : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                    ? 'bg-blue-50 text-blue-800 border-blue-300 font-bold'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {s.label}
@@ -322,7 +308,7 @@ export default function Grievances() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-white border border-slate-300 text-slate-800 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-xs"
             >
               <option value="">All Categories</option>
               {categories.map((c) => (
@@ -333,28 +319,28 @@ export default function Grievances() {
         </div>
       </div>
 
-      {/* Community Grievance Feed (Reddit Style) */}
+      {/* Community Grievance Feed */}
       <div className="space-y-4">
         {grievances.map((g) => (
           <div
             key={g.id}
-            className="bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-2xl overflow-hidden shadow-md transition"
+            className="bg-white border border-slate-200 hover:border-slate-300 rounded-2xl overflow-hidden shadow-xs transition"
           >
             <div className="p-5 flex items-start space-x-4">
               {/* Upvote Column */}
-              <div className="flex flex-col items-center justify-center bg-slate-950/70 p-2.5 rounded-xl border border-slate-800 shrink-0">
+              <div className="flex flex-col items-center justify-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 shrink-0">
                 <button
                   onClick={() => handleVote(g.id)}
                   className={`p-1.5 rounded-lg transition ${
                     g.has_user_upvoted
-                      ? 'text-amber-400 bg-amber-950/60'
-                      : 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
+                      ? 'text-amber-600 bg-amber-100 font-bold'
+                      : 'text-slate-500 hover:text-amber-600 hover:bg-slate-100'
                   }`}
                   title="Upvote / Support this report"
                 >
                   <ThumbsUp size={18} />
                 </button>
-                <span className="text-xs font-bold text-slate-200 mt-1">{g.upvotes_count}</span>
+                <span className="text-xs font-bold text-slate-800 mt-1">{g.upvotes_count}</span>
                 <span className="text-[9px] text-slate-500 uppercase tracking-tighter">votes</span>
               </div>
 
@@ -362,12 +348,12 @@ export default function Grievances() {
               <div className="flex-1 space-y-3">
                 {/* Meta details */}
                 <div className="flex flex-wrap items-center justify-between text-xs gap-2">
-                  <div className="flex items-center space-x-2 text-slate-400 text-[11px]">
-                    <span className="font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-bold">
+                  <div className="flex items-center space-x-2 text-slate-500 text-[11px]">
+                    <span className="font-mono bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-bold border border-slate-200">
                       {g.ticket_number}
                     </span>
                     <span>•</span>
-                    <span className="font-medium text-slate-300">{g.author_name}</span>
+                    <span className="font-medium text-slate-800">{g.author_name}</span>
                     <span>•</span>
                     <span>{new Date(g.created_at).toLocaleDateString()}</span>
                   </div>
@@ -377,12 +363,12 @@ export default function Grievances() {
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
                         g.severity === 'Critical'
-                          ? 'bg-red-950 text-red-300 border-red-800'
+                          ? 'bg-red-50 text-red-700 border-red-200'
                           : g.severity === 'High'
-                          ? 'bg-orange-950 text-orange-300 border-orange-800'
+                          ? 'bg-orange-50 text-orange-700 border-orange-200'
                           : g.severity === 'Medium'
-                          ? 'bg-amber-950 text-amber-300 border-amber-800'
-                          : 'bg-slate-800 text-slate-300 border-slate-700'
+                          ? 'bg-amber-50 text-amber-800 border-amber-200'
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
                       }`}
                     >
                       {g.severity}
@@ -392,8 +378,8 @@ export default function Grievances() {
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
                         g.status === 'Resolved'
-                          ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                          : 'bg-blue-950 text-blue-300 border-blue-800'
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          : 'bg-blue-50 text-blue-800 border-blue-200'
                       }`}
                     >
                       {g.status}
@@ -403,23 +389,23 @@ export default function Grievances() {
 
                 {/* Title & Description */}
                 <div>
-                  <h3 className="text-base font-bold text-white">{g.title}</h3>
-                  <p className="text-xs text-slate-300 mt-1.5 leading-relaxed whitespace-pre-line">
+                  <h3 className="text-base font-bold text-[#0c2340]">{g.title}</h3>
+                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed whitespace-pre-line">
                     {g.description}
                   </p>
                 </div>
 
                 {/* Media: Image with CV Bounding Box Visualization */}
                 {g.image_url && (
-                  <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 max-h-96 w-full flex items-center justify-center">
+                  <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-200 bg-slate-100 max-h-96 w-full flex items-center justify-center">
                     <img
                       src={g.image_url}
                       alt={g.title}
                       className="max-h-96 object-contain rounded-xl"
                     />
                     {g.cv_analysis && g.cv_analysis.detected_classes?.length > 0 && (
-                      <div className="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700 text-[10px] text-amber-300 flex items-center space-x-1.5">
-                        <Sparkles size={11} className="text-amber-400" />
+                      <div className="absolute top-2 left-2 bg-white/95 shadow-sm px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] text-amber-800 font-semibold flex items-center space-x-1.5">
+                        <Sparkles size={11} className="text-amber-600" />
                         <span>CV Detected: {g.cv_analysis.detected_classes.join(', ')}</span>
                       </div>
                     )}
@@ -434,31 +420,31 @@ export default function Grievances() {
                 )}
 
                 {/* Location & Department Tags */}
-                <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-slate-400">
-                  <span className="inline-flex items-center space-x-1 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
-                    <Building size={12} className="text-blue-400" />
+                <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-slate-500">
+                  <span className="inline-flex items-center space-x-1 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700">
+                    <Building size={12} className="text-blue-700" />
                     <span>{g.department}</span>
                   </span>
 
                   {g.address && (
-                    <span className="inline-flex items-center space-x-1 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
-                      <MapPin size={12} className="text-amber-400" />
+                    <span className="inline-flex items-center space-x-1 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700">
+                      <MapPin size={12} className="text-amber-600" />
                       <span className="truncate max-w-xs">{g.address}</span>
                     </span>
                   )}
 
                   {g.duplicate_of_id && (
-                    <span className="bg-amber-950/50 text-amber-300 px-2 py-0.5 rounded border border-amber-800 text-[10px]">
+                    <span className="bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200 text-[10px] font-semibold">
                       Linked Proximity Report
                     </span>
                   )}
                 </div>
 
                 {/* Action Bar (Comments toggle) */}
-                <div className="pt-3 border-t border-slate-800/80 flex items-center space-x-4">
+                <div className="pt-3 border-t border-slate-100 flex items-center space-x-4">
                   <button
                     onClick={() => toggleComments(g.id)}
-                    className="text-xs text-slate-400 hover:text-white flex items-center space-x-1.5 transition"
+                    className="text-xs text-slate-600 hover:text-blue-700 flex items-center space-x-1.5 transition font-medium"
                   >
                     <MessageSquare size={14} />
                     <span>{g.comment_count || 0} Comments</span>
@@ -467,15 +453,15 @@ export default function Grievances() {
 
                 {/* Comments Section */}
                 {activeCommentsGrievanceId === g.id && (
-                  <div className="mt-4 pt-4 border-t border-slate-800 space-y-3">
+                  <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
                     <div className="space-y-2">
                       {(commentsData[g.id] || []).map((c) => (
-                        <div key={c.id} className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 text-xs">
-                          <div className="flex items-center justify-between text-slate-400 text-[10px] mb-1">
-                            <span className="font-bold text-slate-300">{c.author_name}</span>
+                        <div key={c.id} className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
+                          <div className="flex items-center justify-between text-slate-500 text-[10px] mb-1">
+                            <span className="font-bold text-slate-800">{c.author_name}</span>
                             <span>{new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
-                          <p className="text-slate-200">{c.content}</p>
+                          <p className="text-slate-700">{c.content}</p>
                         </div>
                       ))}
                     </div>
@@ -487,11 +473,11 @@ export default function Grievances() {
                         onChange={(e) => setNewCommentText(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handlePostComment(g.id)}
                         placeholder="Add community comment or verification update..."
-                        className="flex-1 bg-slate-800 border border-slate-700 text-xs text-white rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 bg-white border border-slate-300 text-xs text-slate-900 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
                       />
                       <button
                         onClick={() => handlePostComment(g.id)}
-                        className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-xl text-xs font-semibold"
+                        className="bg-[#1e3a8a] hover:bg-blue-800 text-white p-2 rounded-xl text-xs font-semibold shadow-xs"
                       >
                         <Send size={14} />
                       </button>
@@ -506,21 +492,21 @@ export default function Grievances() {
 
       {/* Submission Modal */}
       {showSubmitModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-xl space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center space-x-2">
-                  <Camera size={18} className="text-amber-400" />
+                <h2 className="text-lg font-bold text-[#0c2340] flex items-center space-x-2">
+                  <Camera size={18} className="text-blue-700" />
                   <span>Report Civic Infrastructure Problem</span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Attach photo, voice description, and GPS coordinates for automated AI triage.
                 </p>
               </div>
               <button
                 onClick={() => setShowSubmitModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 font-bold"
               >
                 ✕
               </button>
@@ -529,8 +515,8 @@ export default function Grievances() {
             {/* Submission Feedback View if Completed */}
             {submissionResult ? (
               <div className="space-y-4">
-                <div className="bg-emerald-950/60 border border-emerald-800 p-4 rounded-2xl text-xs text-emerald-200 space-y-2">
-                  <div className="flex items-center space-x-2 font-bold text-sm text-emerald-400">
+                <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs text-emerald-900 space-y-2">
+                  <div className="flex items-center space-x-2 font-bold text-sm text-emerald-800">
                     <CheckCircle2 size={18} />
                     <span>Grievance Successfully Registered!</span>
                   </div>
@@ -543,12 +529,12 @@ export default function Grievances() {
                   <p>
                     AI Recommended Severity: <strong>{submissionResult.ai_analysis.suggested_severity}</strong> (Confidence: {submissionResult.ai_analysis.severity_confidence * 100}%)
                   </p>
-                  <p className="text-slate-300 italic">
+                  <p className="text-slate-600 italic">
                     "{submissionResult.ai_analysis.severity_rationale}"
                   </p>
 
                   {submissionResult.ai_analysis.duplicate_candidate && (
-                    <div className="mt-3 bg-amber-950/60 p-3 rounded-xl border border-amber-800 text-amber-200">
+                    <div className="mt-3 bg-amber-50 p-3 rounded-xl border border-amber-200 text-amber-900">
                       <span className="font-bold block mb-1">Proximity Alert:</span>
                       <span>
                         A similar grievance ({submissionResult.ai_analysis.duplicate_candidate.ticket_number}) was detected {submissionResult.ai_analysis.duplicate_candidate.distance_meters} meters away. Your report has been linked to bolster departmental priority!
@@ -559,7 +545,7 @@ export default function Grievances() {
 
                 <button
                   onClick={() => setShowSubmitModal(false)}
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl"
+                  className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs"
                 >
                   Return to Civic Feed
                 </button>
@@ -567,24 +553,24 @@ export default function Grievances() {
             ) : (
               <form onSubmit={handleSubmitGrievance} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Title / Brief Subject</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Title / Brief Subject</label>
                   <input
                     type="text"
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="e.g. Deep pothole causing accidents near Metro Pillar 42"
-                    className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl px-3 py-2.5"
+                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Infrastructure Category</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Infrastructure Category</label>
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl px-3 py-2.5"
+                      className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                     >
                       {categories.map((c) => (
                         <option key={c} value={c}>{c}</option>
@@ -593,14 +579,14 @@ export default function Grievances() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Location Coordinates</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Location Coordinates</label>
                     <div className="flex space-x-2">
                       <button
                         type="button"
                         onClick={handleDetectLocation}
-                        className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 text-xs font-semibold px-3 py-2.5 rounded-xl flex items-center space-x-1 shrink-0"
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3 py-2.5 rounded-xl flex items-center space-x-1 shrink-0"
                       >
-                        <MapPin size={14} />
+                        <MapPin size={14} className="text-amber-600" />
                         <span>Detect GPS</span>
                       </button>
                       <input
@@ -608,33 +594,33 @@ export default function Grievances() {
                         placeholder="Address / Area"
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="flex-1 bg-slate-800 border border-slate-700 text-white text-xs rounded-xl px-3 py-2.5"
+                        className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Detailed Description</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Detailed Description</label>
                   <textarea
                     rows={3}
                     required
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Describe the severity, when it started, and risk to pedestrians or motorists..."
-                    className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-3"
+                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl p-3 focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
                 {/* Voice Note Recording Section */}
-                <div className="bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-300 flex items-center space-x-1.5">
-                      <Mic size={14} className="text-amber-400" />
+                    <span className="text-xs font-semibold text-slate-700 flex items-center space-x-1.5">
+                      <Mic size={14} className="text-blue-700" />
                       <span>Record Regional Voice Description (Optional)</span>
                     </span>
                     {isRecording && (
-                      <span className="text-red-400 text-xs font-mono animate-pulse">
+                      <span className="text-red-600 text-xs font-mono font-bold animate-pulse">
                         ● Recording {recordingTime}s
                       </span>
                     )}
@@ -645,7 +631,7 @@ export default function Grievances() {
                       <button
                         type="button"
                         onClick={startRecording}
-                        className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 flex items-center space-x-1.5"
+                        className="bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-300 flex items-center space-x-1.5 shadow-xs"
                       >
                         <Mic size={14} />
                         <span>Start Voice Note</span>
@@ -654,7 +640,7 @@ export default function Grievances() {
                       <button
                         type="button"
                         onClick={stopRecording}
-                        className="bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center space-x-1.5"
+                        className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center space-x-1.5"
                       >
                         <MicOff size={14} />
                         <span>Stop & Save Recording</span>
@@ -671,15 +657,15 @@ export default function Grievances() {
 
                 {/* Photo Upload with CV Preview */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Upload Photo / Evidence</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Upload Photo / Evidence</label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500"
+                    className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#1e3a8a] file:text-white hover:file:bg-blue-800"
                   />
                   {imagePreview && (
-                    <div className="mt-2 relative rounded-xl overflow-hidden border border-slate-700 max-h-48 flex items-center justify-center bg-black">
+                    <div className="mt-2 relative rounded-xl overflow-hidden border border-slate-200 max-h-48 flex items-center justify-center bg-slate-100">
                       <img src={imagePreview} alt="Preview" className="max-h-48 object-contain" />
                     </div>
                   )}
@@ -689,7 +675,7 @@ export default function Grievances() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold py-3 rounded-xl shadow-lg transition"
+                    className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs font-bold py-3 rounded-xl shadow-xs transition"
                   >
                     {submitting ? 'Running CV Inference & Routing...' : 'Submit Official Grievance'}
                   </button>

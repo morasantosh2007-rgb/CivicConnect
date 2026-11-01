@@ -68,7 +68,7 @@ export default function Services() {
     setTelemetryLogs([
       { step: 'agent_start', message: `Initializing Autonomous Bureaucracy Agent for ${selectedService.service_name}...` },
       { step: 'profile_check', message: 'Extracting verified citizen identity attributes and required documents...' },
-      { step: 'browser_launch', message: 'Launching Playwright headless session and navigating to official portal...' }
+      { step: 'browser_launch', message: 'Launching Playwright session and navigating to official portal...' }
     ]);
 
     try {
@@ -122,25 +122,25 @@ export default function Services() {
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Header */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      {/* Header — Government Light Theme */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-3 py-1 rounded-full border border-indigo-800/60 mb-2">
-              <Briefcase size={13} />
-              <span>Problem Statement 3 — Autonomous Bureaucracy Execution</span>
+            <div className="inline-flex items-center space-x-2 text-xs font-semibold text-indigo-800 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200 mb-2">
+              <Briefcase size={13} className="text-indigo-700" />
+              <span>Autonomous Bureaucracy Execution Agent</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
               {t('nav_services')}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
               Autonomous Playwright browser agent that navigates complex government portals, populates verified profile attributes, and pauses for explicit citizen consent before submission.
             </p>
           </div>
 
-          <div className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700 text-xs text-slate-300 flex items-center space-x-2">
-            <Lock size={16} className="text-amber-400 shrink-0" />
-            <span>Human-in-the-Loop: Agent never submits without explicit authorization.</span>
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700 flex items-center space-x-2 max-w-md">
+            <Lock size={16} className="text-blue-700 shrink-0" />
+            <span className="font-medium">Human-in-the-Loop Guarantee: The agent strictly requires your review and approval before submitting.</span>
           </div>
         </div>
       </div>
@@ -149,7 +149,7 @@ export default function Services() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Service Catalog */}
         <div className="space-y-3">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 px-1">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 px-1">
             Supported Official Services
           </h2>
 
@@ -163,23 +163,23 @@ export default function Services() {
                   setDraftResult(null);
                   setFinalResult(null);
                 }}
-                className={`p-4 rounded-2xl border cursor-pointer transition flex items-start space-x-3 ${
+                className={`p-4 rounded-xl border cursor-pointer transition flex items-start space-x-3 shadow-xs ${
                   selectedService?.id === service.id
-                    ? 'bg-blue-950/40 border-blue-500 shadow-md shadow-blue-950/50'
-                    : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+                    ? 'bg-blue-50/70 border-blue-600 text-blue-950 font-medium'
+                    : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50'
                 }`}
               >
-                <div className="p-2 rounded-xl bg-slate-800 text-amber-400 shrink-0 mt-0.5">
+                <div className="p-2 rounded-lg bg-blue-100 text-blue-800 shrink-0 mt-0.5">
                   <Briefcase size={16} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-xs text-white leading-snug">
+                  <h3 className="font-bold text-xs text-[#0c2340] leading-snug">
                     {service.service_name}
                   </h3>
-                  <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                  <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
                     {service.description}
                   </p>
-                  <span className="text-[10px] text-blue-400 font-semibold mt-2 inline-block">
+                  <span className="text-[10px] text-blue-700 font-semibold mt-2 inline-block">
                     {service.portal_name} →
                   </span>
                 </div>
@@ -191,41 +191,41 @@ export default function Services() {
         {/* Right Columns: Active Service Details & Execution Panel */}
         <div className="lg:col-span-2 space-y-4">
           {selectedService && (
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                  <span className="font-semibold text-blue-400">{selectedService.portal_name}</span>
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                  <span className="font-semibold text-blue-700">{selectedService.portal_name}</span>
                   <a
                     href={selectedService.portal_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-1 hover:text-white"
+                    className="flex items-center space-x-1 hover:text-blue-900 font-medium"
                   >
                     <span>View Official Portal</span>
                     <ExternalLink size={11} />
                   </a>
                 </div>
-                <h2 className="text-xl font-extrabold text-white">
+                <h2 className="text-xl font-extrabold text-[#0c2340]">
                   {selectedService.service_name}
                 </h2>
-                <p className="text-xs text-slate-300 mt-1">
+                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                   {selectedService.description}
                 </p>
               </div>
 
               {/* Document Readiness Checklist */}
-              <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-                <span className="text-xs font-bold text-slate-200 flex items-center space-x-1.5">
-                  <FileCheck2 size={15} className="text-emerald-400" />
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                  <FileCheck2 size={15} className="text-emerald-700" />
                   <span>Document Readiness & Eligibility Verification</span>
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   {selectedService.mandatory_documents?.map((doc, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center space-x-2 bg-slate-900 p-2 rounded-xl border border-slate-800 text-slate-300"
+                      className="flex items-center space-x-2 bg-white p-2.5 rounded-lg border border-slate-200 text-slate-700 shadow-xs"
                     >
-                      <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
+                      <CheckCircle2 size={13} className="text-emerald-600 shrink-0" />
                       <span>{doc}</span>
                     </div>
                   ))}
@@ -237,7 +237,7 @@ export default function Services() {
                 <div className="pt-2">
                   <button
                     onClick={handleInitiateAgent}
-                    className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-amber-500 hover:from-blue-500 hover:to-amber-400 text-white font-bold text-xs py-3.5 rounded-xl shadow-xl transition flex items-center justify-center space-x-2"
+                    className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs py-3.5 rounded-xl shadow-xs transition flex items-center justify-center space-x-2"
                   >
                     <Sparkles size={16} />
                     <span>Launch Autonomous Playwright Agent</span>
@@ -249,12 +249,12 @@ export default function Services() {
               )}
 
               {agentStep === 'initiating' && (
-                <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center space-y-3">
-                  <Loader2 size={32} className="animate-spin text-amber-400 mx-auto" />
-                  <p className="text-xs font-bold text-white">
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center space-y-3">
+                  <Loader2 size={32} className="animate-spin text-blue-700 mx-auto" />
+                  <p className="text-xs font-bold text-slate-900">
                     Agent Navigating Official Portal & Synthesizing Form Fields...
                   </p>
-                  <div className="text-[11px] font-mono text-slate-400 space-y-1">
+                  <div className="text-[11px] font-mono text-slate-600 space-y-1">
                     {telemetryLogs.map((log, lIdx) => (
                       <div key={lIdx}>{log.message}</div>
                     ))}
@@ -264,19 +264,19 @@ export default function Services() {
 
               {/* Explicit Human Approval Checkpoint Modal / Card */}
               {agentStep === 'awaiting_approval' && draftResult && (
-                <div className="bg-amber-950/20 border-2 border-amber-500/80 rounded-2xl p-5 space-y-4">
-                  <div className="flex items-center space-x-2 text-amber-400 font-bold text-sm">
-                    <AlertCircle size={18} />
+                <div className="bg-amber-50/70 border-2 border-amber-300 rounded-xl p-5 space-y-4">
+                  <div className="flex items-center space-x-2 text-amber-900 font-bold text-sm">
+                    <AlertCircle size={18} className="text-amber-700" />
                     <span>Mandatory Citizen Authorization Checkpoint</span>
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-700 leading-relaxed">
                     The autonomous browser agent has navigated to <strong>{draftResult.portal_name}</strong> and pre-filled the required details from your verified profile. You must inspect the pre-submission snapshot and grant explicit authorization before final submission.
                   </p>
 
                   {/* Pre-approval Screenshot from Browser Agent */}
                   {draftResult.pre_approval_screenshot && (
-                    <div className="rounded-xl overflow-hidden border border-slate-700 bg-black">
+                    <div className="rounded-xl overflow-hidden border border-slate-300 bg-white">
                       <img
                         src={draftResult.pre_approval_screenshot}
                         alt="Pre-approval portal preview"
@@ -285,7 +285,7 @@ export default function Services() {
                     </div>
                   )}
 
-                  <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1">
                     <p><strong>Tracking Reference Assigned:</strong> {draftResult.reference_number}</p>
                     <p><strong>Applicant Name:</strong> {draftResult.form_data?.applicant_name || user?.full_name}</p>
                     <p><strong>State / Region:</strong> {draftResult.form_data?.state || profile?.state || 'Verified'}</p>
@@ -294,14 +294,14 @@ export default function Services() {
                   <div className="flex items-center space-x-3 pt-2">
                     <button
                       onClick={() => handleApproveAndSubmit(true)}
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-3 rounded-xl shadow-lg transition flex items-center justify-center space-x-1.5"
+                      className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs transition flex items-center justify-center space-x-1.5"
                     >
                       <CheckCircle2 size={15} />
                       <span>Approve & Authorize Final Submission</span>
                     </button>
                     <button
                       onClick={() => handleApproveAndSubmit(false)}
-                      className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl"
+                      className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl"
                     >
                       Cancel
                     </button>
@@ -310,30 +310,30 @@ export default function Services() {
               )}
 
               {agentStep === 'submitting' && (
-                <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center space-y-3">
-                  <Loader2 size={32} className="animate-spin text-emerald-400 mx-auto" />
-                  <p className="text-xs font-bold text-white">
-                    Citizen Consent Cryptographically Verified. Submitting to Government Authority...
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center space-y-3">
+                  <Loader2 size={32} className="animate-spin text-emerald-700 mx-auto" />
+                  <p className="text-xs font-bold text-slate-900">
+                    Citizen Consent Verified. Submitting to Government Authority...
                   </p>
                 </div>
               )}
 
               {/* Submission Completed Card */}
               {agentStep === 'submitted' && finalResult && (
-                <div className="bg-emerald-950/40 border border-emerald-700/80 rounded-2xl p-5 space-y-4">
-                  <div className="flex items-center space-x-2 text-emerald-400 font-bold text-sm">
-                    <CheckCircle2 size={20} />
+                <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-5 space-y-4">
+                  <div className="flex items-center space-x-2 text-emerald-900 font-bold text-sm">
+                    <CheckCircle2 size={20} className="text-emerald-700" />
                     <span>Application Officially Submitted & Acknowledged!</span>
                   </div>
 
-                  <p className="text-xs text-slate-200">
+                  <p className="text-xs text-slate-700">
                     Your application has been received by <strong>{selectedService.portal_name}</strong>.
                     Official acknowledgement tracking receipt generated.
                   </p>
 
                   {/* Submission Receipt Image */}
                   {finalResult.receipt_url && (
-                    <div className="rounded-xl overflow-hidden border border-emerald-800/80 bg-black">
+                    <div className="rounded-xl overflow-hidden border border-emerald-300 bg-white">
                       <img
                         src={finalResult.receipt_url}
                         alt="Official Receipt"
@@ -342,16 +342,16 @@ export default function Services() {
                     </div>
                   )}
 
-                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-300">
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700">
                     <p>
                       <strong>Official Acknowledgement Reference:</strong>{' '}
-                      <span className="font-mono text-emerald-400 font-bold">{finalResult.reference_number}</span>
+                      <span className="font-mono text-emerald-700 font-bold">{finalResult.reference_number}</span>
                     </p>
                     <a
                       href={finalResult.official_tracking_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline mt-1 inline-flex items-center space-x-1"
+                      className="text-blue-700 hover:underline mt-1 inline-flex items-center space-x-1 font-semibold"
                     >
                       <span>Track Directly on Department Portal</span>
                       <ExternalLink size={11} />
@@ -364,7 +364,7 @@ export default function Services() {
                       setDraftResult(null);
                       setFinalResult(null);
                     }}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl"
+                    className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs"
                   >
                     Complete Another Application
                   </button>

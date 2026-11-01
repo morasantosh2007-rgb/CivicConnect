@@ -11,10 +11,8 @@ import Home from './pages/Home';
 import Policies from './pages/Policies';
 import Services from './pages/Services';
 import Grievances from './pages/Grievances';
-import CivicMap from './pages/CivicMap';
 import Verification from './pages/Verification';
 import Assistant from './pages/Assistant';
-import Applications from './pages/Applications';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import Settings from './pages/Settings';
@@ -24,7 +22,7 @@ import Register from './pages/Register';
 function ProtectedRoute({ children, officerOnly = false }) {
   const { user, loading, isOfficerOrAdmin } = useAuth();
   if (loading) {
-    return <div className="p-8 text-center text-slate-400">Loading user session...</div>;
+    return <div className="p-8 text-center text-slate-500 font-medium">Loading user session...</div>;
   }
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -39,7 +37,7 @@ function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <Navbar
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         isSidebarOpen={sidebarOpen}
@@ -57,10 +55,8 @@ function MainLayout() {
             <Route path="/policies" element={<Policies />} />
             <Route path="/services" element={<Services />} />
             <Route path="/grievances" element={<Grievances />} />
-            <Route path="/map" element={<CivicMap />} />
             <Route path="/verify" element={<Verification />} />
             <Route path="/assistant" element={<Assistant />} />
-            <Route path="/applications" element={<Applications />} />
             <Route path="/profile" element={<Profile />} />
             <Route
               path="/admin"

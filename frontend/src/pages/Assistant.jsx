@@ -8,11 +8,7 @@ import {
   Volume2,
   CheckCircle2,
   ExternalLink,
-  Sparkles,
-  Loader2,
-  FileText,
-  AlertTriangle,
-  CheckCheck
+  Loader2
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -21,7 +17,7 @@ export default function Assistant() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      text: 'Namaste! I am your Multilingual AI Citizen Assistant. Ask me anything about government schemes, legal rights, grievance filing, or verifying official government notifications.',
+      text: 'Namaste! I am your Multilingual AI Citizen Assistant. Ask me anything about government schemes, legal rights, grievance filing, or verifying official government notifications. I can also converse with you in your preferred language.',
       citations: []
     }
   ]);
@@ -78,7 +74,7 @@ export default function Assistant() {
     }
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.lang = language === 'hi' ? 'hi-IN' : (language === 'te' ? 'te-IN' : (language === 'ta' ? 'ta-IN' : 'en-IN'));
+    recognition.lang = language === 'hi' ? 'hi-IN' : (language === 'te' ? 'te-IN' : (language === 'ta' ? 'ta-IN' : (language === 'kn' ? 'kn-IN' : 'en-IN')));
 
     if (!isRecording) {
       setIsRecording(true);
@@ -101,56 +97,56 @@ export default function Assistant() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text.slice(0, 400));
-      utterance.lang = language === 'hi' ? 'hi-IN' : (language === 'te' ? 'te-IN' : (language === 'ta' ? 'ta-IN' : 'en-IN'));
+      utterance.lang = language === 'hi' ? 'hi-IN' : (language === 'te' ? 'te-IN' : (language === 'ta' ? 'ta-IN' : (language === 'kn' ? 'kn-IN' : 'en-IN')));
       window.speechSynthesis.speak(utterance);
     }
   };
 
   return (
     <div className="space-y-6 pb-16 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between">
+      {/* Header — Government White Theme */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="p-3 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 text-white shadow-lg">
+          <div className="p-3 rounded-xl bg-blue-100 text-blue-800">
             <Bot size={24} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white flex items-center space-x-2">
+            <h1 className="text-xl font-bold text-[#0c2340] flex items-center space-x-2">
               <span>{t('nav_assistant')}</span>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300 font-semibold">
                 Official RAG Active
               </span>
             </h1>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Multilingual policy intelligence grounded in official government gazettes and ministry portals.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Multilingual policy and governance intelligence grounded in official gazettes and ministry portals.
             </p>
           </div>
         </div>
       </div>
 
       {/* Chat Container */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl shadow-xl overflow-hidden flex flex-col h-[600px]">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col h-[600px]">
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/70">
           {messages.map((m, idx) => (
             <div
               key={idx}
               className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
             >
               <div
-                className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
+                className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed shadow-xs ${
                   m.role === 'user'
-                    ? 'bg-blue-600 text-white rounded-br-none shadow-md shadow-blue-900/20'
-                    : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700/80 shadow-md'
+                    ? 'bg-[#1e3a8a] text-white rounded-br-none'
+                    : 'bg-white text-slate-800 rounded-bl-none border border-slate-200'
                 }`}
               >
                 <p className="whitespace-pre-line">{m.text}</p>
 
                 {/* Citations */}
                 {m.citations && m.citations.length > 0 && (
-                  <div className="mt-3 pt-2.5 border-t border-slate-700 space-y-1.5">
-                    <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-1">
-                      <CheckCircle2 size={12} className="text-emerald-400" />
+                  <div className="mt-3 pt-2.5 border-t border-slate-200 space-y-1.5">
+                    <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider flex items-center space-x-1">
+                      <CheckCircle2 size={12} className="text-emerald-700" />
                       <span>Official Verified Citations</span>
                     </span>
                     {m.citations.map((c, cIdx) => (
@@ -159,7 +155,7 @@ export default function Assistant() {
                         href={c.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block text-xs text-blue-400 hover:underline flex items-center space-x-1"
+                        className="block text-xs text-blue-700 hover:underline flex items-center space-x-1"
                       >
                         <span className="truncate">{c.title} ({c.department})</span>
                         <ExternalLink size={10} className="shrink-0" />
@@ -169,16 +165,16 @@ export default function Assistant() {
                 )}
 
                 {m.role === 'assistant' && (
-                  <div className="mt-2.5 pt-1.5 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-700/40">
+                  <div className="mt-2.5 pt-1.5 flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-100">
                     <button
                       onClick={() => playVoice(m.text)}
-                      className="hover:text-amber-400 flex items-center space-x-1 transition"
+                      className="hover:text-blue-800 flex items-center space-x-1 transition font-medium"
                     >
                       <Volume2 size={13} />
                       <span>Listen in {language.toUpperCase()}</span>
                     </button>
                     {m.provider && (
-                      <span className="font-mono text-[9px] text-slate-500">{m.provider}</span>
+                      <span className="font-mono text-[9px] text-slate-400">{m.provider}</span>
                     )}
                   </div>
                 )}
@@ -187,8 +183,8 @@ export default function Assistant() {
           ))}
 
           {loading && (
-            <div className="flex items-center space-x-2 text-xs text-slate-400 bg-slate-800/60 p-3 rounded-2xl border border-slate-800 max-w-sm">
-              <Loader2 size={15} className="animate-spin text-amber-400" />
+            <div className="flex items-center space-x-2 text-xs text-slate-600 bg-white p-3 rounded-2xl border border-slate-200 max-w-sm shadow-xs">
+              <Loader2 size={15} className="animate-spin text-blue-700" />
               <span>Grounded retrieval from official policy repository...</span>
             </div>
           )}
@@ -196,14 +192,14 @@ export default function Assistant() {
         </div>
 
         {/* Input Controls */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center space-x-2">
+        <div className="p-4 bg-white border-t border-slate-200 flex items-center space-x-2">
           <button
             onClick={toggleSpeech}
             title={isRecording ? 'Stop voice recording' : 'Speak voice question'}
             className={`p-3 rounded-xl transition ${
               isRecording
                 ? 'bg-red-600 text-white animate-pulse'
-                : 'bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
             }`}
           >
             {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
@@ -213,13 +209,13 @@ export default function Assistant() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder={`Ask in ${language.toUpperCase()} about welfare schemes, grievance steps, or official facts...`}
-            className="flex-1 bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder={`Ask in ${language.toUpperCase()} about welfare schemes, grievance steps, or general questions...`}
+            className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
           <button
             onClick={() => handleSend()}
             disabled={loading || !input.trim()}
-            className="bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white p-3 rounded-xl transition font-bold"
+            className="bg-[#1e3a8a] hover:bg-blue-800 disabled:opacity-40 text-white p-3 rounded-xl transition font-bold shadow-xs"
           >
             <Send size={18} />
           </button>

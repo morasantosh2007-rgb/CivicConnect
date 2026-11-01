@@ -1,4 +1,5 @@
 import re
+import json
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -8,7 +9,7 @@ from app.core.config import settings
 from app.core.database import get_db_connection, dict_from_row
 from app.services.translation_service import translate_text
 
-# Real official government welfare schemes with official rules
+# Comprehensive catalog of verified real-world Indian Central and State welfare schemes
 OFFICIAL_BENCHMARK_SCHEMES = [
     {
         "title": "PM Surya Ghar: Muft Bijli Yojana",
@@ -44,6 +45,10 @@ OFFICIAL_BENCHMARK_SCHEMES = [
         "deadline": "Open / Tri-annual Installments",
         "original_text": "PM-KISAN is a Central Sector scheme with 100% funding from Government of India. Under the scheme, income support of ₹6,000/- per year in three equal installments of ₹2,000/- each every four months is provided to all landholding farmer families.",
         "summary_en": "Direct income assistance of ₹6,000 annually paid in three installments of ₹2,000 directly into bank accounts of eligible farmer families.",
+        "summary_te": "రైతు కుటుంబాలకు ఏటా రూ. 6,000 ప్రత్యక్ష నగదు సహాయం మూడు విడతల్లో రూ. 2,000 చొప్పున బ్యాంక్ ఖాతాల్లో జమ చేయబడుతుంది.",
+        "summary_hi": "पात्र किसान परिवारों के बैंक खातों में प्रति वर्ष ₹6,000 की प्रत्यक्ष आय सहायता, तीन समान किस्तों (₹2,000 प्रत्येक) में प्रदान की जाती है।",
+        "summary_ta": "விவசாய குடும்பங்களுக்கு ஆண்டுதோறும் ₹6,000 நேரடி வருமான உதவி மூன்று தவணைகளாக ₹2,000 வீதம் வங்கி கணக்கில் செலுத்தப்படுகிறது.",
+        "summary_kn": "ಅರ್ಹ ರೈತ ಕುಟುಂಬಗಳಿಗೆ ವರ್ಷಕ್ಕೆ ₹6,000 ನೇರ ಆದಾಯ ನೆರವು ಮೂರು ಕಂತುಗಳಲ್ಲಿ (ಪ್ರತಿ ಕಂತಿಗೆ ₹2,000) ಬ್ಯಾಂಕ್ ಖಾತೆಗೆ ಜಮೆ ಮಾಡಲಾಗುತ್ತದೆ.",
         "benefits_description": "₹6,000 per year direct income support disbursed in 3 equal installments of ₹2,000 via Direct Benefit Transfer (DBT).",
         "required_documents_json": '["Aadhaar Card linked to Bank Account", "Landholding Records / RoR / Khasra-Khatauni", "Active Bank Passbook", "Mobile Number linked to Aadhaar"]',
         "eligibility_criteria_json": '{"min_age": 18, "occupation": "farmer", "max_income": 800000, "landholder": true, "institutional_landholder_excluded": true}'
@@ -61,6 +66,10 @@ OFFICIAL_BENCHMARK_SCHEMES = [
         "deadline": "Continuous / Cashless Enrollment",
         "original_text": "Ayushman Bharat PM-JAY is the world largest government-funded healthcare scheme. It provides health assurance cover of up to ₹5 Lakh per family per year for secondary and tertiary care hospitalization across public and empaneled private hospitals.",
         "summary_en": "Provides ₹5 lakh annual cashless health cover per family for secondary and tertiary inpatient hospitalization across empaneled hospitals nationwide.",
+        "summary_te": "ద్వితీయ మరియు తృతీయ స్థాయి ఆసుపత్రి చికిత్సల కోసం కుటుంబానికి ఏటా రూ. 5 లక్షల వరకు ఉచిత నగదు రహిత ఆరోగ్య బీమా.",
+        "summary_hi": "प्रति परिवार प्रति वर्ष ₹5 लाख तक का कैशलेस स्वास्थ्य बीमा कवर, द्वितीयक और तृतीयक अस्पताल में भर्ती के लिए पूरे देश में उपलब्ध।",
+        "summary_ta": "குடும்பத்திற்கு ஆண்டுக்கு ₹5 லட்சம் வரை இலவச மருத்துவ சிகிச்சை வழங்கும் உலகின் மிகப்பெரிய மருத்துவ காப்பீட்டுத் திட்டம்.",
+        "summary_kn": "ಕುಟುಂಬಕ್ಕೆ ವರ್ಷಕ್ಕೆ ₹5 ಲಕ್ಷದವರೆಗೆ ಉಚಿತ ನಗದು ರಹಿತ ಚಿಕಿತ್ಸಾ ವೆಚ್ಚ ಭರಿಸುವ ಸಮಗ್ರ ಆರೋಗ್ಯ ಭರವಸೆ ಯೋಜನೆ.",
         "benefits_description": "₹5,00,000 per family per year cashless hospitalization coverage for pre-existing diseases, surgeries, diagnostic tests, and post-hospitalization medications.",
         "required_documents_json": '["Aadhaar Card", "Ration Card / Family ID", "Registered Mobile Number", "PM-JAY Verification Letter (if issued)"]',
         "eligibility_criteria_json": '{"max_income": 300000, "states": "all", "special_inclusion_age": 70}'
@@ -78,6 +87,10 @@ OFFICIAL_BENCHMARK_SCHEMES = [
         "deadline": "October 31 annually (or extended by State Authority)",
         "original_text": "The Post Matric Scholarship scheme provides financial assistance to students belonging to Scheduled Castes, Scheduled Tribes and Other Backward Classes studying at post-matriculation or post-secondary stage to enable them to complete their education.",
         "summary_en": "Complete tuition fee waiver or reimbursement plus monthly maintenance allowance for eligible SC/ST/OBC students enrolled in recognized higher education courses.",
+        "summary_te": "ఉన్నత విద్య అభ్యసించే ఎస్సీ, ఎస్టీ, బీసీ విద్యార్థులకు పూర్తి ఫీజు రీయింబర్స్‌మెంట్ మరియు నెలవారీ విద್ಯಾ భత్యం.",
+        "summary_hi": "मान्यता प्राप्त उच्च शिक्षण संस्थानों में नामांकित एससी/एसटी/ओबीसी छात्रों के लिए पूर्ण शिक्षण शुल्क प्रतिपूर्ति और मासिक रखरखाव भत्ता।",
+        "summary_ta": "பிற்படுத்தப்பட்ட மற்றும் தாழ்த்தப்பட்ட மாணவர்களுக்கு உயர்கல்வி பயில முழுக் கல்விக்கட்டண உதவி மற்றும் மாதாந்திர பராமரிப்பு உதவித்தொகை.",
+        "summary_kn": "ಉನ್ನತ ಶಿಕ್ಷಣ ವ್ಯಾಸಂಗ ಮಾಡುವ ಎಸ್‌ಸಿ/ಎಸ್‌ಟಿ/ಒಬಿಸಿ ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಸಂಪೂರ್ಣ ಶುಲ್ಕ ಮರುಪಾವತಿ ಮತ್ತು ಮಾಸಿಕ ನಿರ್ವಹಣಾ ಭತ್ಯೆ ನೀಡುವ ಯೋಜನೆ.",
         "benefits_description": "100% compulsory non-refundable fees reimbursed + monthly academic maintenance allowance ranging from ₹2,500 to ₹13,500 per annum.",
         "required_documents_json": '["Caste Certificate", "Annual Family Income Certificate", "Class 10/12 Marksheet", "College Admission Fee Receipt", "Bank Passbook with Aadhaar Seeding"]',
         "eligibility_criteria_json": '{"max_income": 250000, "categories": ["SC", "ST", "OBC"], "education_level": "higher_education", "employment_status": "student"}'
@@ -95,9 +108,328 @@ OFFICIAL_BENCHMARK_SCHEMES = [
         "deadline": "Open Ongoing Scheme",
         "original_text": "PM Vishwakarma provides end-to-end holistic support to traditional artisans and craftspeople. Benefits include PM Vishwakarma Certificate & ID Card, skill upgradation with stipend, toolkit incentive of ₹15,000, and collateral-free credit support up to ₹3 lakh at 5% interest rate.",
         "summary_en": "Holistic support for artisans including ₹15,000 toolkit grant, formal skill training with ₹500/day stipend, and subsidized enterprise loans up to ₹3,00,000 at 5% interest.",
+        "summary_te": "చేతివృత్తుల వారికి రూ. 15,000 టూల్‌కిట్ గ్రాంట్, రోజుకు రూ. 500 స్టైఫండ్‌తో ఉచిత నైపుణ్య శిక్షణ, 5% వడ్డీతో రూ. 3 లక్షల వరకు పూచీకత్తు లేని రుణాలు.",
+        "summary_hi": "पारंपरिक कारीगरों के लिए ₹15,000 टूलकिट अनुदान, ₹500/दिन वजीफे के साथ कौशल प्रशिक्षण और 5% रियायती ब्याज पर ₹3 लाख तक का संपार्श्विक-मुक्त ऋण।",
+        "summary_ta": "பாரம்பரிய கைவினைஞர்களுக்கு ₹15,000 உபகரண மானியம், நாள் ஒன்றுக்கு ₹500 உதவித்தொகையுடன் பயிற்சி மற்றும் 5% வட்டியில் ₹3 லட்சம் வரை கடன்.",
+        "summary_kn": "ಸಾಂಪ್ರದಾಯಿಕ ಕುಶಲಕರ್ಮಿಗಳಿಗೆ ₹15,000 ಟೂಲ್‌ಕಿಟ್ ಅನುದಾನ, ದಿನಕ್ಕೆ ₹500 ಭತ್ಯೆಯೊಂದಿಗೆ ಉಚಿತ ತರಬೇತಿ ಮತ್ತು 5% ಬಡ್ಡಿಯಲ್ಲಿ ₹3 ಲಕ್ಷದವರೆಗೆ ಸಾಲ ಸೌಲಭ್ಯ.",
         "benefits_description": "₹15,000 modern toolkit incentive; collateral-free enterprise loan up to ₹1,00,000 (Tranche 1) and ₹2,00,000 (Tranche 2) at 5% concessional interest; digital transaction incentives.",
         "required_documents_json": '["Aadhaar Card", "Mobile Number linked to Aadhaar", "Bank Account Details", "Ration Card (mandatory for family verification)", "Trade Skill Verification"]',
         "eligibility_criteria_json": '{"min_age": 18, "occupation": "artisan", "traditional_trade_worker": true, "max_family_members_enrolled": 1}'
+    },
+    {
+        "title": "Pradhan Mantri Awas Yojana - Urban (PMAY-U)",
+        "department": "Ministry of Housing and Urban Affairs",
+        "issuing_authority": "Government of India",
+        "publication_date": "2015-06-25",
+        "source_url": "https://pmaymis.gov.in/",
+        "official_portal_url": "https://pmaymis.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Urban homeless and economically weaker families without a pucca house in India",
+        "category": "Housing & Urban Development",
+        "deadline": "Extended through 2028 (PMAY-U 2.0)",
+        "original_text": "PMAY-U envisions providing all-weather pucca houses to all eligible beneficiaries in urban areas. Under Credit Linked Subsidy Scheme (CLSS) and Beneficiary-led Construction (BLC), financial assistance up to ₹2.67 lakh is provided.",
+        "summary_en": "Provides up to ₹2.67 lakh central interest subsidy and direct construction grants to construct or purchase a permanent pucca house in urban municipal areas.",
+        "summary_te": "పట్టణ ప్రాంతాలలో పక్కా గృహాల నిర్మాణం లేదా కొనుగోలు కోసం రూ. 2.67 లక్షల వరకు వడ్డీ సబ్సిడీ మరియు ఆర్థిక సహాయం.",
+        "summary_hi": "शहरी क्षेत्रों में पक्के मकान के निर्माण या खरीद हेतु ₹2.67 लाख तक की ब्याज सब्सिडी और सरकारी वित्तीय सहायता प्रदान की जाती है।",
+        "summary_ta": "நகர்ப்புற ஏழை எளிய குடும்பங்கள் சொந்தமாக கான்கிரீட் வீடு கட்ட அல்லது வாங்க ₹2.67 லட்சம் வரை அரசு மானியம் வழங்கும் திட்டம்.",
+        "summary_kn": "ನಗರ ಪ್ರದೇಶಗಳಲ್ಲಿ ವಾಸಿಸುವ ಬಡ ಕುಟುಂಬಗಳಿಗೆ ಸ್ವಂತ ಪಕ್ಕಾ ಮನೆ ನಿರ್ಮಾಣಕ್ಕಾಗಿ ₹2.67 ಲಕ್ಷದವರೆಗೆ ಬಡ್ಡಿ ಸಬ್ಸಿಡಿ ಮತ್ತು ಅನುದಾನ ನೀಡುವ ಯೋಜನೆ.",
+        "benefits_description": "Up to ₹2.67 Lakh interest subsidy on home loans; direct central assistance of ₹1.5 Lakh per dwelling unit under Beneficiary-Led Construction.",
+        "required_documents_json": '["Aadhaar Card", "Income Certificate / Salary Slip", "Affidavit certifying no pucca house ownership", "Bank Account Details", "Land Ownership Documents (for BLC)"]',
+        "eligibility_criteria_json": '{"max_income": 600000, "own_pucca_house": false, "residence_type": "urban"}'
+    },
+    {
+        "title": "Pradhan Mantri Awas Yojana - Gramin (PMAY-G)",
+        "department": "Ministry of Rural Development",
+        "issuing_authority": "Government of India",
+        "publication_date": "2016-11-20",
+        "source_url": "https://pmayg.nic.in/",
+        "official_portal_url": "https://pmayg.nic.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Rural families living in kutcha or dilapidated houses based on SECC criteria",
+        "category": "Housing & Rural Development",
+        "deadline": "Ongoing Mission Mode",
+        "original_text": "PMAY-G aims to provide a pucca house with basic amenities to all rural families who are homeless or living in kutcha houses. Direct assistance of ₹1.20 lakh in plain areas and ₹1.30 lakh in hilly/difficult areas.",
+        "summary_en": "Direct grant of ₹1.20 lakh to ₹1.30 lakh for building a permanent house in rural villages, plus 90 days of MGNREGA wages and ₹12,000 for toilet construction.",
+        "summary_te": "గ్రామీణ ప్రాంతాల్లో పక్కా ఇంటి నిర్మాణం కోసం రూ. 1.20 లక్షల నుండి రూ. 1.30 లక్షల వరకు నేరుగా ఆర్థిక సహాయం, ఉపాధి హామీ పథకం కింద 90 రోజుల వేతనం.",
+        "summary_hi": "ग्रामीण क्षेत्रों में पक्के मकान निर्माण के लिए ₹1.20 लाख से ₹1.30 लाख की सीधी आर्थिक मदद, साथ ही मनरेगा के तहत 90 दिनों की मजदूरी।",
+        "summary_ta": "கிராமப்புறங்களில் கான்கிரீட் வீடு கட்ட ₹1.20 லட்சம் முதல் ₹1.30 லட்சம் வரை நேரடி அரசு மானியம் மற்றும் கழிப்பறை கட்ட ₹12,000 உதவித்தொகை.",
+        "summary_kn": "ಗ್ರಾಮೀಣ ಭಾಗದ ಬಡ ಕುಟುಂಬಗಳಿಗೆ ಸ್ವಂತ ಮನೆ ನಿರ್ಮಾಣಕ್ಕಾಗಿ ₹1.20 ಲಕ್ಷದಿಂದ ₹1.30 ಲಕ್ಷ ನೇರ ಧನಸಹಾಯ ಮತ್ತು ಶೌಚಾಲಯ ನಿರ್ಮಾಣಕ್ಕೆ ₹12,000 ನೆರವು.",
+        "benefits_description": "₹1,20,000 (Plain areas) / ₹1,30,000 (Hilly/Himalayan states) direct grant + 90-95 days of unskilled labor wages under MGNREGA + ₹12,000 under Swachh Bharat Mission for toilets.",
+        "required_documents_json": '["Aadhaar Card", "MGNREGA Job Card", "Bank Account Passbook", "SECC 2011 Verification / Gram Sabha Resolution"]',
+        "eligibility_criteria_json": '{"residence_type": "rural", "own_pucca_house": false, "max_income": 180000}'
+    },
+    {
+        "title": "Atal Pension Yojana (APY)",
+        "department": "Pension Fund Regulatory and Development Authority (PFRDA), Ministry of Finance",
+        "issuing_authority": "Government of India",
+        "publication_date": "2015-05-09",
+        "source_url": "https://www.npscra.nsdl.co.in/",
+        "official_portal_url": "https://www.npscra.nsdl.co.in/",
+        "is_scheme": 1,
+        "affected_citizens": "All Indian citizens aged 18 to 40 years, especially workers in unorganized sectors",
+        "category": "Social Security & Pension",
+        "deadline": "Open Enrollment",
+        "original_text": "Atal Pension Yojana provides a guaranteed minimum monthly pension of ₹1,000 to ₹5,000 from age 60, depending on contributions. Subscribed by individuals aged 18-40.",
+        "summary_en": "Guaranteed lifetime monthly pension of ₹1,000 to ₹5,000 for unorganized sector workers starting at age 60, with spouse pension and nominee corpus return.",
+        "summary_te": "అసంఘటిత రంగ కార్మికులకు 60 ఏళ్ల వయస్సు తర్వాత నెలకు రూ. 1,000 నుండి రూ. 5,000 వరకు జీవితాంతం హామీతో కూడిన పెన్షన్ అందించే పథకం.",
+        "summary_hi": "18 से 40 वर्ष के नागरिकों के लिए 60 वर्ष की आयु के बाद ₹1,000 से ₹5,000 तक की गारंटीकृत आजीवन मासिक पेंशन योजना।",
+        "summary_ta": "அமைப்புசாரா தொழிலாளர்களுக்கு 60 வயதிற்குப் பிறகு மாதம் ₹1,000 முதல் ₹5,000 வரை அரசு உத்தரவாதத்துடன் கூடிய மாதாந்திர ஓய்வூதியம்.",
+        "summary_kn": "ಅಸಂಘಟಿತ ವಲಯದ ಕಾರ್ಮಿಕರಿಗೆ 60 ವರ್ಷ ತುಂಬಿದ ನಂತರ ತಿಂಗಳಿಗೆ ₹1,000 ದಿಂದ ₹5,000 ವರೆಗೆ ಖಾತರಿಯ ಮಾಸಿಕ ಪಿಂಚಣಿ ನೀಡುವ ಯೋಜನೆ.",
+        "benefits_description": "Guaranteed monthly pension of ₹1,000, ₹2,000, ₹3,000, ₹4,000 or ₹5,000 from age 60 until death. 100% pension continues to spouse, and complete corpus of up to ₹8.5 Lakh returned to nominee.",
+        "required_documents_json": '["Savings Bank Account", "Aadhaar Card", "Active Mobile Number", "Nominee Details"]',
+        "eligibility_criteria_json": '{"min_age": 18, "max_age": 40, "income_tax_payer_excluded": true}'
+    },
+    {
+        "title": "Pradhan Mantri Mudra Yojana (PMMY)",
+        "department": "Department of Financial Services, Ministry of Finance",
+        "issuing_authority": "Government of India",
+        "publication_date": "2015-04-08",
+        "source_url": "https://www.mudra.org.in/",
+        "official_portal_url": "https://www.mudra.org.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Small micro-entrepreneurs, shopkeepers, artisans, and small business owners",
+        "category": "Banking, Loans & MSME",
+        "deadline": "Continuous Availability across all Banks",
+        "original_text": "PMMY provides loans up to ₹20 lakh to non-corporate, non-farm small/micro enterprises. Three categories: Shishu (up to ₹50,000), Kishore (₹50,000 to ₹5 lakh), Tarun (₹5 lakh to ₹20 lakh). No collateral required.",
+        "summary_en": "Collateral-free business loans up to ₹20 lakh under Shishu, Kishore, and Tarun categories to start or expand micro enterprises and retail shops.",
+        "summary_te": "చిన్న వ్యాపారులు మరియు నూతన స్టార్టప్‌ల కోసం ఎలాంటి తాకట్టు లేకుండా రూ. 20 లక్షల వరకు తక్కువ వడ్డీతో ముద్రా రుణాలు.",
+        "summary_hi": "बिना किसी गारंटी (कोलैटरल) के छोटे व्यवसायियों और खुदरा व्यापारियों को ₹20 लाख तक का रियायती व्यावसायिक ऋण।",
+        "summary_ta": "சிறு வணிகர்கள் மற்றும் தொழில்முனைவோருக்கு பிணையம் ஏதுமின்றி ₹20 லட்சம் வரை குறைந்த வட்டியில் தொழில் கடன் வழங்கும் முத்ரா திட்டம்.",
+        "summary_kn": "ಸಣ್ಣ ವ್ಯಾಪಾರಿಗಳು ಮತ್ತು ನವೋದ್ಯಮಿಗಳಿಗೆ ಯಾವುದೇ ಆಧಾರವಿಲ್ಲದೆ ₹20 ಲಕ್ಷದವರೆಗೆ ಕಡಿಮೆ ಬಡ್ಡಿಯಲ್ಲಿ ಸಾಲ ನೀಡುವ ಪ್ರಧಾನ ಮಂತ್ರಿ ಮುದ್ರಾ ಯೋಜನೆ.",
+        "benefits_description": "Zero collateral security required; loans up to ₹20,00,000; affordable interest rates; flexible repayment tenure up to 5-7 years; MUDRA RuPay card for working capital.",
+        "required_documents_json": '["Identity Proof (Aadhaar / Voter ID)", "Business Address Proof", "Business Registration / Udyam Certificate", "Past 6 Months Bank Statement", "Quotation / Project Report"]',
+        "eligibility_criteria_json": '{"min_age": 18, "business_type": "non_farm_micro_enterprise"}'
+    },
+    {
+        "title": "Sukanya Samriddhi Yojana (SSY)",
+        "department": "Department of Posts & Ministry of Finance",
+        "issuing_authority": "Government of India",
+        "publication_date": "2015-01-22",
+        "source_url": "https://www.indiapost.gov.in/",
+        "official_portal_url": "https://www.indiapost.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Parents or legal guardians of girl children aged below 10 years",
+        "category": "Women & Child Empowerment",
+        "deadline": "Account openable anytime before girl child turns 10",
+        "original_text": "Sukanya Samriddhi Yojana is a government-backed savings scheme targeted at parents of girl children. It offers an attractive interest rate (8.2% per annum), Section 80C tax exemption, and exempt-exempt-exempt (EEE) tax status on maturity.",
+        "summary_en": "High-interest sovereign savings scheme (8.2% interest) with 100% tax exemption under Section 80C to secure the education and marriage of a girl child.",
+        "summary_te": "ఆడపిల్లల ఉన్నత చదువులు మరియు భవిష్యత్తు కోసం 8.2% గరిష్ట వడ్డీ రేటు మరియు పూర్తి పన్ను మినహాయింపుతో సుకన్య సమృద్ధి యోజన.",
+        "summary_hi": "बेटियों की उच्च शिक्षा और भविष्य के लिए 8.2% ब्याज दर और 100% आयकर छूट (EEE) के साथ लोकप्रिय सरकारी बचत योजना।",
+        "summary_ta": "பெண் குழந்தைகளின் கல்வி மற்றும் திருமணத்திற்காக 8.2% அதிக வட்டியுடன் கூடிய மத்திய அரசின் சுகன்யா சம்ரித்தி சேமிப்பு திட்டம்.",
+        "summary_kn": "ಹೆಣ್ಣು ಮಕ್ಕಳ ಉನ್ನತ ಶಿಕ್ಷಣ ಮತ್ತು ಭವಿಷ್ಯಕ್ಕಾಗಿ 8.2% ಗರಿಷ್ಠ ಬಡ್ಡಿ ಮತ್ತು ಸಂಪೂರ್ಣ ತೆರಿಗೆ ವಿನಾಯಿತಿ ನೀಡುವ ಸುಕನ್ಯಾ ಸಮೃದ್ಧಿ ಯೋಜನೆ.",
+        "benefits_description": "Attractive compound annual interest rate of 8.2%; Triple tax exemption (Deposit, Interest, Maturity); Minimum deposit ₹250/year up to ₹1.5 Lakh/year.",
+        "required_documents_json": '["Girl Child Birth Certificate", "Identity Proof of Parent/Guardian (Aadhaar/PAN)", "Address Proof", "Photographs"]',
+        "eligibility_criteria_json": '{"max_age_child": 10, "gender_target": "female"}'
+    },
+    {
+        "title": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+        "department": "Ministry of Housing and Urban Affairs",
+        "issuing_authority": "Government of India",
+        "publication_date": "2020-06-01",
+        "source_url": "https://pmsvanidhi.mohua.gov.in/",
+        "official_portal_url": "https://pmsvanidhi.mohua.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Urban and peri-urban street vendors and hawkers",
+        "category": "Livelihood & Micro Credit",
+        "deadline": "Ongoing Scheme",
+        "original_text": "PM SVANidhi facilitates collateral-free working capital loans of ₹10,000, ₹20,000 and ₹50,000 to street vendors. Features 7% interest subsidy on timely repayment and digital cashbacks up to ₹1,200/year.",
+        "summary_en": "Collateral-free micro working capital loans up to ₹50,000 for street vendors with 7% interest subsidy and cashback for digital transactions.",
+        "summary_te": "వీధి వ్యాపారులకు రూ. 50,000 వరకు తాకట్టు లేని వర్కింగ్ క్యాపిటల్ రుణాలు, సమయానికి చెల్లిస్తే 7% వడ్డీ సబ్సిడీ మరియు క్యాష్‌బ్యాక్.",
+        "summary_hi": "स्ट्रीट वेंडरों और रेहड़ी-पटरी वालों के लिए ₹50,000 तक का सस्ता कार्यशील पूंजी ऋण, 7% ब्याज सब्सिडी और डिजिटल कैशबैक सुविधा।",
+        "summary_ta": "தெருவோர வியாபாரிகளுக்கு ₹50,000 வரை பிணையமில்லா குறைந்த வட்டி கடன், 7% வட்டி மானியம் மற்றும் டிஜிட்டல் கேஷ்பேக் சலுகை.",
+        "summary_kn": "ಬೀದಿ ಬದಿ ವ್ಯಾಪಾರಿಗಳಿಗೆ ₹50,000 ವರೆಗೆ ಜಾಮೀನು ರಹಿತ ದುಡಿಯುವ ಬಂಡವಾಳ ಸಾಲ, 7% ಬಡ್ಡಿ ಸಬ್ಸಿಡಿ ಮತ್ತು ಡಿಜಿಟಲ್ ಕ್ಯಾಶ್‌ಬ್ಯಾಕ್ ಸೌಲಭ್ಯ.",
+        "benefits_description": "First tranche ₹10,000; Second tranche ₹20,000; Third tranche ₹50,000; 7% interest subsidy credited directly to bank account; Up to ₹1,200 annual cashback on digital QR payments.",
+        "required_documents_json": '["Certificate of Vending (CoV) / Recommendation Letter from Urban Local Body", "Aadhaar Card", "Bank Account linked to Mobile Number"]',
+        "eligibility_criteria_json": '{"occupation": "street_vendor", "urban_vendor": true}'
+    },
+    {
+        "title": "Pradhan Mantri Ujjwala Yojana (PMUY 2.0)",
+        "department": "Ministry of Petroleum and Natural Gas",
+        "issuing_authority": "Government of India",
+        "publication_date": "2021-08-10",
+        "source_url": "https://www.pmuy.gov.in/",
+        "official_portal_url": "https://www.pmuy.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Adult women belonging to poor BPL / EWS households without existing LPG connection",
+        "category": "Energy & Women Welfare",
+        "deadline": "Open Application",
+        "original_text": "PMUY 2.0 provides deposit-free LPG connections to adult women from poor households, along with a free first refill and hotplate stove, plus a targeted ₹300 per cylinder subsidy.",
+        "summary_en": "Deposit-free LPG gas connection in the name of the female head of the family, free gas stove, first free cylinder refill, and ₹300 direct subsidy per cylinder.",
+        "summary_te": "పేద కుటుంబాల మహిళల పేరిట ఉచిత గ్యాస్ కనెక్షన్, ఉచిత స్టవ్, మొదటి ఉచిత సిలిండర్ మరియు ప్రతి సిలిండర్‌పై రూ. 300 నేరుగా రాయితీ.",
+        "summary_hi": "गरीब परिवारों की महिलाओं को नि:शुल्क एलपीजी गैस कनेक्शन, पहला भरा हुआ सिलेंडर और चूल्हा मुफ्त, साथ ही प्रति सिलेंडर ₹300 की लक्षित सब्सिडी।",
+        "summary_ta": "ஏழை குடும்பப் பெண்களுக்கு வைப்புத்தொகையற்ற இலவச சமையல் எரிவாயு இணைப்பு, இலவச கேஸ் அடுப்பு மற்றும் சிலிண்டருக்கு ₹300 நேரடி மானியம்.",
+        "summary_kn": "ಬಡ ಕುಟುಂಬಗಳ ಮಹಿಳೆಯರ ಹೆಸರಿನಲ್ಲಿ ಠೇವಣಿ ರಹಿತ ಉಚಿತ ಗ್ಯಾಸ್ ಸಂಪರ್ಕ, ಉಚಿತ ಒಲೆ, ಮೊದಲ ಸಿಲಿಂಡರ್ ಭರ್ತಿ ಮತ್ತು ಪ್ರತಿ ಸಿಲಿಂಡರ್‌ಗೆ ₹300 ಸಬ್ಸಿಡಿ.",
+        "benefits_description": "Free deposit-free LPG connection; free hotplate stove; free first refill; continuous ₹300 direct benefit transfer subsidy per 14.2 kg domestic LPG cylinder.",
+        "required_documents_json": '["Aadhaar Card of Applicant and Adult Family Members", "Ration Card / BPL Document", "Active Bank Passbook with IFSC", "Declaration of No Existing LPG Connection"]',
+        "eligibility_criteria_json": '{"min_age": 18, "gender_target": "female", "existing_lpg": false, "max_income": 200000}'
+    },
+    {
+        "title": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+        "department": "Department of Agriculture and Farmers Welfare",
+        "issuing_authority": "Government of India",
+        "publication_date": "2016-02-18",
+        "source_url": "https://pmfby.gov.in/",
+        "official_portal_url": "https://pmfby.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "All farmers including sharecroppers and tenant farmers growing notified crops",
+        "category": "Agriculture & Insurance",
+        "deadline": "Seasonal cut-off (July 31 for Kharif, Dec 31 for Rabi)",
+        "original_text": "PMFBY provides comprehensive crop insurance cover against non-preventable natural risks from pre-sowing to post-harvest. Farmers pay a nominal premium of 2% for Kharif, 1.5% for Rabi, and 5% for commercial/horticultural crops.",
+        "summary_en": "Comprehensive low-premium crop insurance for farmers protecting against drought, flood, pests, and unseasonal rains with satellite-based claim settlement.",
+        "summary_te": "రైతులకు ప్రకృతి వైపరీత్యాలు, కరువు, వరదల వల్ల కలిగే పంట నష్టానికి అతి తక్కువ ప్రీమియంతో పూర్తి పంట బీమా రక్షణ.",
+        "summary_hi": "सूखा, बाढ़ और बेमौसम बारिश से फसल नुकसान पर किसानों को व्यापक बीमा सुरक्षा, जिसमें किसान को केवल 1.5% से 2% का न्यूनतम प्रीमियम देना होता है।",
+        "summary_ta": "வறட்சி மற்றும் வெள்ளத்தால் ஏற்படும் பயிர் சேதங்களுக்கு விவசாயிகளுக்கு மிகக் குறைந்த பிரீமியத்தில் முழு பயிர் காப்பீட்டு இழப்பீடு.",
+        "summary_kn": "ಬರ, ಪ್ರವಾಹ ಹಾಗೂ ಅಕಾಲಿಕ ಮಳೆಯಿಂದ ಬೆಳೆ ನಷ್ಟವಾದಲ್ಲಿ ರೈತರಿಗೆ ಅತ್ಯಂತ ಕಡಿಮೆ ಪ್ರೀಮಿಯಂನಲ್ಲಿ ಸಂಪೂರ್ಣ ಬೆಳೆ ವಿಮೆ ಪರಿಹಾರ ನೀಡುವ ಯೋಜನೆ.",
+        "benefits_description": "Coverage from sowing prevention to post-harvest losses; Farmers pay only 2% for Kharif crops, 1.5% for Rabi food grains/oilseeds, and 5% for horticultural crops; remaining premium paid by Government.",
+        "required_documents_json": '["Land Record / RoR / Patta Passbook", "Sowing Certificate / Crop Declaration", "Bank Account Passbook", "Aadhaar Card"]',
+        "eligibility_criteria_json": '{"occupation": "farmer", "crop_grower": true}'
+    },
+    {
+        "title": "National Social Assistance Programme (NSAP Old Age & Widow Pension)",
+        "department": "Ministry of Rural Development",
+        "issuing_authority": "Government of India & State Social Welfare Departments",
+        "publication_date": "1995-08-15",
+        "source_url": "https://nsap.nic.in/",
+        "official_portal_url": "https://nsap.nic.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Elderly citizens aged 60+, widows aged 40+, and persons with severe disabilities living below poverty line",
+        "category": "Social Welfare & Pension",
+        "deadline": "Continuous Enrollment",
+        "original_text": "NSAP fulfills Directive Principles of State Policy by providing social security pensions: Indira Gandhi National Old Age Pension Scheme (IGNOAPS), Widow Pension Scheme (IGNWPS), and Disability Pension Scheme (IGNDPS).",
+        "summary_en": "Monthly social security pension for BPL senior citizens (60+ years), destitute widows, and individuals with severe disabilities, augmented by state contributions.",
+        "summary_te": "నిరుపేద వృద్ధులు (60+ ఏళ్లు), వితంతువులు మరియు దివ్యాంగులకు ప్రతి నెలా గౌరవప్రదమైన జీవనం కోసం అందించే సామాజిక భద్రతా పెన్షన్.",
+        "summary_hi": "गरीबी रेखा से नीचे जीवन यापन करने वाले वरिष्ठ नागरिकों (60+ वर्ष), विधवाओं और दिव्यांगजनों को मासिक सामाजिक सुरक्षा पेंशन।",
+        "summary_ta": "வறுமைக் கோட்டிற்கு கீழ் உள்ள முதியவர்கள் (60+ வயது), கைம்பெண்கள் மற்றும் மாற்றுத்திறனாளிகளுக்கு மாதாந்திர சமூகப் பாதுகாப்பு ஓய்வூதியம்.",
+        "summary_kn": "ಬಡತನ ರೇಖೆಗಿಂತ ಕೆಳಗಿರುವ ಹಿರಿಯ ನಾಗರಿಕರು (60+ ವರ್ಷ), ವಿಧವೆಯರು ಮತ್ತು ವಿಕಲಚೇತನರಿಗೆ ಗೌರವಯುತ ಜೀವನಕ್ಕಾಗಿ ಮಾಸಿಕ ಸಾಮಾಜಿಕ ಭದ್ರತಾ ಪಿಂಚಣಿ.",
+        "benefits_description": "Monthly direct benefit pension (ranging from ₹1,000 to ₹3,000/month combined with state top-ups) credited directly to beneficiary bank/post office accounts.",
+        "required_documents_json": '["Aadhaar Card", "Age Proof Certificate", "BPL Ration Card / Income Certificate", "Bank Account Passbook", "Disability Certificate (if applicable)"]',
+        "eligibility_criteria_json": '{"min_age": 60, "max_income": 100000, "bpl_card": true}'
+    },
+    {
+        "title": "Jal Jeevan Mission (Har Ghar Jal)",
+        "department": "Department of Drinking Water and Sanitation, Ministry of Jal Shakti",
+        "issuing_authority": "Government of India",
+        "publication_date": "2019-08-15",
+        "source_url": "https://jaljeevanmission.gov.in/",
+        "official_portal_url": "https://ejalshakti.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "All rural households across all Indian villages",
+        "category": "Water & Sanitation",
+        "deadline": "Mission Target Implementation",
+        "original_text": "Jal Jeevan Mission aims to provide functional household tap connection (FHTC) to every rural home, ensuring potable drinking water supply in adequate quantity (55 liters per capita per day) of prescribed quality on regular basis.",
+        "summary_en": "Provides piped, treated drinking water tap connections directly inside every rural household (55 liters per person per day) to eliminate manual water fetching.",
+        "summary_te": "ప్రతి గ్రామీణ నివాసానికి నేరుగా నల్లా ద్వారా రోజుకు తలసరి 55 లీటర్ల శుభ్రమైన, సురక్షితమైన తాగునీటి సరఫరా అందించే పథకం.",
+        "summary_hi": "प्रत्येक ग्रामीण परिवार को घर के भीतर नल से शुद्ध और सुरक्षित पेयजल कनेक्शन (प्रति व्यक्ति 55 लीटर प्रतिदिन) प्रदान करने का राष्ट्रीय मिशन।",
+        "summary_ta": "ஒவ்வொரு கிராமப்புற வீட்டிற்கும் குழாய் மூலம் தினமும் நபர் ஒருவருக்கு 55 லிட்டர் சுத்தமான குடிநீர் இணைப்பு வழங்கும் தேசிய இயக்கம்.",
+        "summary_kn": "ಪ್ರತಿಯೊಂದು ಗ್ರಾಮೀಣ ಮನೆಗೂ ನೇರವಾಗಿ ನಲ್ಲಿಯ ಮೂಲಕ ದಿನಕ್ಕೆ ವ್ಯಕ್ತಿಗೆ 55 ಲೀಟರ್ ಶುದ್ಧ ಕುಡಿಯುವ ನೀರು ಪೂರೈಸುವ ಜಲ ಜೀವನ್ ಮಿಷನ್.",
+        "benefits_description": "Free individual household piped water connection; testing kits provided to village water sanitation committees (VWSC); guaranteed continuous potable water standard.",
+        "required_documents_json": '["Village Household ID / Ration Card", "Aadhaar Card", "Gram Panchayat Residential Confirmation"]',
+        "eligibility_criteria_json": '{"residence_type": "rural", "has_tap_connection": false}'
+    },
+    {
+        "title": "Pradhan Mantri Kaushal Vikas Yojana (PMKVY 4.0)",
+        "department": "Ministry of Skill Development and Entrepreneurship",
+        "issuing_authority": "Government of India",
+        "publication_date": "2023-04-01",
+        "source_url": "https://www.pmkvyofficial.org/",
+        "official_portal_url": "https://www.pmkvyofficial.org/",
+        "is_scheme": 1,
+        "affected_citizens": "Unemployed Indian youth, school/college dropouts aged 15 to 45 years",
+        "category": "Skill Development & Employment",
+        "deadline": "Continuous Batch Enrolments",
+        "original_text": "PMKVY 4.0 provides industry-aligned skill certification and placement assistance across modern job roles including AI, Robotics, Mechatronics, Green Energy, and Healthcare. Course fees 100% sponsored by Government.",
+        "summary_en": "Free government-certified vocational skill training with monetary reward and direct job placement support in cutting-edge industries for unemployed youth.",
+        "summary_te": "నిరుద్యోగ యువతకు అత్యాధునిక రంగాలలో ఉచిత సాంకేతిక నైపుణ్య శిక్షణ, ప్రభుత్వ ధృవీకరణ పత్రం మరియు ఉద్యోగ అవకాశాలు.",
+        "summary_hi": "बेरोजगार युवाओं के लिए उद्योग-उन्मुख कौशल प्रशिक्षण, सरकारी प्रमाणपत्र और सीधे रोजगार के अवसर, 100% सरकारी खर्च पर।",
+        "summary_ta": "வேலையில்லா இளைஞர்களுக்கு நவீன தொழில்நுட்பங்களில் இலவச திறன் பயிற்சி, மத்திய அரசு சான்றிதழ் மற்றும் வேலைவாய்ப்பு உதவி.",
+        "summary_kn": "ನಿರುದ್ಯೋಗಿ ಯುವಜನರಿಗೆ ಉಚಿತ ಉದ್ಯೋಗಾಧಾರಿತ ಕೌಶಲ್ಯ ತರಬೇತಿ, ಸರ್ಕಾರಿ ಪ್ರಮಾಣಪತ್ರ ಮತ್ತು ಉದ್ಯೋಗಾವಕಾಶ ನೀಡುವ ಯೋಜನೆ.",
+        "benefits_description": "100% free certified training courses; government assessment certification; post-placement stipend and support; digital skills and entrepreneurship modules.",
+        "required_documents_json": '["Aadhaar Card", "Bank Account Details", "Educational Qualification / School Leaving Certificate", "Recent Passport Photographs"]',
+        "eligibility_criteria_json": '{"min_age": 15, "max_age": 45, "employment_status": "unemployed"}'
+    },
+    {
+        "title": "Pradhan Mantri Jan Dhan Yojana (PMJDY)",
+        "department": "Department of Financial Services, Ministry of Finance",
+        "issuing_authority": "Government of India",
+        "publication_date": "2014-08-28",
+        "source_url": "https://pmjdy.gov.in/",
+        "official_portal_url": "https://pmjdy.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Any unbanked adult citizen of India",
+        "category": "Banking & Financial Inclusion",
+        "deadline": "Open at all Public/Private Bank Branches",
+        "original_text": "PMJDY provides universal access to banking services with at least one basic banking account for every unbanked adult, zero minimum balance, free RuPay debit card with ₹2 lakh accidental insurance, and ₹10,000 overdraft facility.",
+        "summary_en": "Zero-balance bank account with free RuPay debit card, ₹2 lakh accidental death insurance, and ₹10,000 overdraft facility for every unbanked citizen.",
+        "summary_te": "కనీస నిల్వ అవసరం లేని ఉచిత జీరో బ్యాలెన్స్ బ్యాంక్ ఖాతా, రూ. 2 లక్షల ఉచిత ప్రమాద బీమా మరియు రూ. 10,000 ఓవర్‌డ్రాఫ్ట్ సదుపాయం.",
+        "summary_hi": "जीरो-बैलेंस बैंक खाता, मुफ्त रुपे डेबिट कार्ड, ₹2 लाख का दुर्घटना बीमा और संतोषजनक संचालन पर ₹10,000 की ओवरड्राफ्ट सुविधा।",
+        "summary_ta": "குறைந்தபட்ச இருப்பு தேவையில்லாத இலவச ஜீரோ பேலன்ஸ் வங்கி கணக்கு, ₹2 லட்சம் இலவச விபத்து காப்பீடு மற்றும் ₹10,000 வரை ஓவர் டிராப்ட் சலுகை.",
+        "summary_kn": "ಯಾವುದೇ ಕನಿಷ್ಠ ಬ್ಯಾಲೆನ್ಸ್ ಇಲ್ಲದ ಉಚಿತ ಜೀರೋ ಬ್ಯಾಲೆನ್ಸ್ ಖಾತೆ, ₹2 ಲಕ್ಷ ಉಚಿತ ಅಪಘಾತ ವಿಮೆ ಮತ್ತು ₹10,000 ಓವರ್‌ಡ್ರಾಫ್ಟ್ ಸೌಲಭ್ಯ.",
+        "benefits_description": "Zero minimum balance account; interest on deposits; RuPay debit card with ₹2,00,000 accidental cover; ₹10,000 overdraft facility per eligible household; direct receipt of all DBT subsidies.",
+        "required_documents_json": '["Aadhaar Card (eKYC)", "PAN Card / Form 60", "Passport Photograph"]',
+        "eligibility_criteria_json": '{"min_age": 10, "unbanked": true}'
+    },
+    {
+        "title": "Rythu Bandhu / Agriculture Investment Support Scheme",
+        "department": "Department of Agriculture, Government of Telangana",
+        "issuing_authority": "Government of Telangana",
+        "publication_date": "2018-05-10",
+        "source_url": "https://rythubandhu.telangana.gov.in/",
+        "official_portal_url": "https://rythubandhu.telangana.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "All landholding farmers in Telangana State",
+        "category": "Agriculture & Farmers Welfare",
+        "deadline": "Bi-annual (Kharif and Rabi seasons)",
+        "original_text": "Rythu Bandhu provides investment support of ₹10,000 per acre per year (₹5,000 per acre for each Kharif and Rabi season) directly to farmers' bank accounts for purchasing seeds, fertilizers, pesticides, and farming inputs.",
+        "summary_en": "Investment support of ₹10,000 per acre per year (₹5,000/acre each season) transferred directly to farmers in Telangana for agricultural inputs.",
+        "summary_te": "తెలంగాణలోని రైతులకు విత్తనాలు, ఎరువుల పెట్టుబడి సహాయం కోసం ఎకరాకు ఏటా రూ. 10,000 (సీజన్‌కు రూ. 5,000) నేరుగా బ్యాంక్ ఖాతాలో జమ.",
+        "summary_hi": "तेलंगाना के किसानों को खेती की लागत (बीज, खाद) के लिए ₹10,000 प्रति एकड़ प्रति वर्ष की सीधी वित्तीय सहायता।",
+        "summary_ta": "விவசாயிகளுக்கு பயிர் சாகுபடி செலவுகளுக்காக ஆண்டுக்கு ஏக்கருக்கு ₹10,000 நேரடி முதலீட்டு உதவி வழங்கும் திட்டம்.",
+        "summary_kn": "ರೈತರಿಗೆ ಕೃಷಿ ವೆಚ್ಚಗಳಿಗಾಗಿ ಪ್ರತಿ ವರ್ಷ ಎಕರೆಗೆ ₹10,000 ನೇರ ಧನಸಹಾಯ ನೀಡುವ ಕೃಷಿ ಹೂಡಿಕೆ ನೆರವು ಯೋಜನೆ.",
+        "benefits_description": "₹5,000 per acre per season direct benefit transfer; no restrictions on land size for genuine patta holders; complete freedom to buy choice of inputs.",
+        "required_documents_json": '["Pattadar Passbook / Digital RoR 1B", "Aadhaar Card", "Bank Account linked to Aadhaar"]',
+        "eligibility_criteria_json": '{"state": "Telangana", "occupation": "farmer", "landholder": true}'
+    },
+    {
+        "title": "Kalaignar Magalir Urimai Thittam",
+        "department": "Department of Social Welfare and Women Empowerment, Government of Tamil Nadu",
+        "issuing_authority": "Government of Tamil Nadu",
+        "publication_date": "2023-09-15",
+        "source_url": "https://kmut.tn.gov.in/",
+        "official_portal_url": "https://kmut.tn.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Female heads of eligible low-income families in Tamil Nadu",
+        "category": "Women Welfare & Direct Support",
+        "deadline": "Ongoing Monthly Disbursal",
+        "original_text": "Kalaignar Magalir Urimai Thittam provides basic income support of ₹1,000 per month (₹12,000 annually) directly to the bank accounts of women heads of eligible households in Tamil Nadu to recognize their unpaid care work.",
+        "summary_en": "Direct basic income grant of ₹1,000 per month (₹12,000 annually) deposited into the bank accounts of women heads of households in Tamil Nadu.",
+        "summary_te": "తమిళనాడులోని పేద కుటుంబాల మహిళా యజమానురాలికి నెలకు రూ. 1,000 చొప్పున ఏటా రూ. 12,000 నేరుగా బ్యాంక్ ఖాతాలో జమ చేసే పథకం.",
+        "summary_hi": "तमिलनाडु में पात्र परिवारों की महिला मुखिया को ₹1,000 प्रति माह (₹12,000 प्रति वर्ष) की सीधी मासिक आर्थिक सहायता।",
+        "summary_ta": "குடும்பத் தலைவிகளின் உழைப்பை அங்கீகரிக்கும் வகையில் மாதம் ₹1,000 (ஆண்டுக்கு ₹12,000) நேரடியாக வங்கி கணக்கில் செலுத்தும் மகளிர் உரிமைத் திட்டம்.",
+        "summary_kn": "ತಮಿಳುನಾಡಿನ ಕುಟುಂಬದ ಮಹಿಳಾ ಮುಖ್ಯಸ್ಥರಿಗೆ ತಿಂಗಳಿಗೆ ₹1,000 (ವರ್ಷಕ್ಕೆ ₹12,000) ನೇರ ಮಾಸಿಕ ಧನಸಹಾಯ ನೀಡುವ ಮಹಿಳಾ ಹಕ್ಕು ಯೋಜನೆ.",
+        "benefits_description": "₹1,000 credited on the 15th of every month via Direct Benefit Transfer; full autonomy of expenditure for women beneficiaries.",
+        "required_documents_json": '["Smart Ration Card", "Aadhaar Card of Female Head", "Bank Passbook with Aadhaar link", "Electricity Consumer Number"]',
+        "eligibility_criteria_json": '{"state": "Tamil Nadu", "min_age": 21, "gender_target": "female", "max_income": 250000}'
+    },
+    {
+        "title": "Karnataka Yuva Nidhi Scheme",
+        "department": "Department of Skill Development, Entrepreneurship and Livelihood, Karnataka",
+        "issuing_authority": "Government of Karnataka",
+        "publication_date": "2024-01-12",
+        "source_url": "https://sevasindhuservices.karnataka.gov.in/",
+        "official_portal_url": "https://sevasindhuservices.karnataka.gov.in/",
+        "is_scheme": 1,
+        "affected_citizens": "Unemployed degree and diploma holders in Karnataka who graduated recently",
+        "category": "Education, Youth & Unemployment Relief",
+        "deadline": "Open through Seva Sindhu Portal",
+        "original_text": "Yuva Nidhi provides financial support of ₹3,000 per month for degree holders and ₹1,500 per month for diploma holders who graduated in the academic year and remain unemployed for 6 months after graduation, up to 2 years.",
+        "summary_en": "Monthly financial assistance of ₹3,000 for unemployed graduates and ₹1,500 for diploma holders in Karnataka for up to 2 years while seeking employment.",
+        "summary_te": "కర్ణాటకలోని నిరుద్యోగ డిగ్రీ ఉత్తీర్ణులకు నెలకు రూ. 3,000, డిప్లొమా వారికి నెలకు రూ. 1,500 చొప్పున రెండేళ్ల వరకు అందించే నిరుద్యోగ భృతి.",
+        "summary_hi": "कर्नाटक के बेरोजगार स्नातकों को ₹3,000/माह और डिप्लोमा धारकों को ₹1,500/माह का बेरोजगारी भत्ता, अधिकतम 2 वर्षों के लिए।",
+        "summary_ta": "கர்நாடகாவில் வேலை தேடும் பட்டதாரிகளுக்கு மாதம் ₹3,000 மற்றும் டிப்ளமோ முடித்தவர்களுக்கு மாதம் ₹1,500 வழங்கும் இளைஞர் நிதி திட்டம்.",
+        "summary_kn": "ಕರ್ನಾಟಕದ ನಿರುದ್ಯೋಗಿ ಪದವೀಧರರಿಗೆ ತಿಂಗಳಿಗೆ ₹3,000 ಹಾಗೂ ಡಿಪ್ಲೊಮಾ ಪಾಸಾದವರಿಗೆ ತಿಂಗಳಿಗೆ ₹1,500 ರಂತೆ 2 ವರ್ಷಗಳವರೆಗೆ ನೀಡುವ ಯುವ ನಿಧಿ ಯೋಜನೆ.",
+        "benefits_description": "₹3,000/month for degree holders and ₹1,500/month for diploma holders via DBT for up to 24 months or until employment is secured, whichever is earlier.",
+        "required_documents_json": '["Karnataka Domicile Proof", "Degree / Diploma Certificate", "Aadhaar Card", "Bank Account linked to Aadhaar", "Self-declaration of Unemployment"]',
+        "eligibility_criteria_json": '{"state": "Karnataka", "employment_status": "unemployed", "education_level": "higher_education"}'
     }
 ]
 
@@ -169,7 +501,7 @@ async def fetch_live_pib_releases() -> List[Dict[str, Any]]:
                 conn = get_db_connection()
                 cursor = conn.cursor()
 
-                for item in items[:10]: # Process top 10 most recent live releases
+                for item in items[:15]:
                     title_elem = item.find("title")
                     link_elem = item.find("link")
                     desc_elem = item.find("description")
@@ -192,7 +524,6 @@ async def fetch_live_pib_releases() -> List[Dict[str, Any]]:
                         summary_ta = translate_text(summary_en, target_lang="ta")
                         summary_kn = translate_text(summary_en, target_lang="kn")
 
-                        # Infer ministry/department from title
                         dept = "Press Information Bureau / Government of India"
                         if "Ministry of" in title or "Ministry of" in cleaned_text:
                             m = re.search(r"Ministry of [A-Za-z\s]+", title + " " + cleaned_text)
@@ -240,15 +571,9 @@ def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[
     """
     Evaluates citizen's profile against scheme eligibility criteria.
     Never guarantees eligibility based solely on AI.
-    Returns:
-    - outcome: 'Potentially eligible' | 'Additional information required' | 'Not eligible based on verified mandatory condition'
-    - conditions_satisfied: List[str]
-    - conditions_not_satisfied: List[str]
-    - missing_information: List[str]
     """
     rules_raw = scheme_dict.get("eligibility_criteria_json") or "{}"
     try:
-        import json
         rules = json.loads(rules_raw) if isinstance(rules_raw, str) else rules_raw
     except Exception:
         rules = {}
@@ -257,7 +582,18 @@ def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[
     not_satisfied = []
     missing_info = []
 
-    # 1. Age check
+    # 1. State check
+    target_state = rules.get("state")
+    user_state = profile_dict.get("state")
+    if target_state and target_state != "all":
+        if not user_state:
+            missing_info.append(f"State residency declaration required (State: {target_state})")
+        elif user_state.strip().lower() == target_state.strip().lower():
+            satisfied.append(f"Residency condition met ({target_state})")
+        else:
+            not_satisfied.append(f"Scheme restricted to residents of {target_state} (Declared state: {user_state})")
+
+    # 2. Age check
     user_age = profile_dict.get("age")
     min_age = rules.get("min_age")
     max_age = rules.get("max_age")
@@ -280,7 +616,7 @@ def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[
         else:
             not_satisfied.append(f"Exceeds maximum age limit of {max_age} years (Current age: {user_age})")
 
-    # 2. Income check
+    # 3. Income check
     user_income = profile_dict.get("annual_income")
     max_income = rules.get("max_income")
     if max_income is not None:
@@ -289,13 +625,12 @@ def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[
         elif user_income <= max_income:
             satisfied.append(f"Annual income ₹{user_income:,.0f} satisfies income ceiling of ₹{max_income:,.0f}")
         else:
-            # Check if special age exempts
             if special_age and user_age and user_age >= special_age:
                 satisfied.append(f"Eligible under Senior Citizen Universal Inclusion (Age {user_age} >= {special_age})")
             else:
                 not_satisfied.append(f"Annual income ₹{user_income:,.0f} exceeds maximum threshold of ₹{max_income:,.0f}")
 
-    # 3. Category check (SC/ST/OBC/General)
+    # 4. Category check (SC/ST/OBC/General)
     user_cat = profile_dict.get("category")
     allowed_categories = rules.get("categories")
     if allowed_categories:
@@ -306,7 +641,7 @@ def evaluate_scheme_eligibility(scheme_dict: Dict[str, Any], profile_dict: Dict[
         else:
             not_satisfied.append(f"Category '{user_cat}' is not covered under this specific targeted scheme")
 
-    # 4. Occupation / Employment
+    # 5. Occupation / Employment
     target_occ = rules.get("occupation")
     user_occ = profile_dict.get("occupation", "").lower()
     user_emp = profile_dict.get("employment_status", "").lower()

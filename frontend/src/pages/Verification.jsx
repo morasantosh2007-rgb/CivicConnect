@@ -135,39 +135,39 @@ export default function Verification() {
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Header */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      {/* Header — Government Light Theme */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 text-xs font-semibold text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/60 mb-2">
-              <CheckCheck size={13} />
-              <span>Problem Statement 4 — Forensic Truth Intelligence</span>
+            <div className="inline-flex items-center space-x-2 text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 mb-2">
+              <CheckCheck size={13} className="text-emerald-700" />
+              <span>Real-Time Fact Verification & Deepfake Audit</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
               {t('nav_verify')}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
               Verify viral news, government scheme rumors, deepfake videos, altered photographs, and synthetic audio recordings. Grounded in official PIB Fact Check archives.
             </p>
           </div>
 
-          <div className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700 text-xs text-slate-300 flex items-center space-x-2">
-            <Fingerprint size={18} className="text-emerald-400 shrink-0" />
-            <span>Forensic ELA, EXIF metadata inspection, and official gazette corroboration.</span>
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700 flex items-center space-x-2 max-w-md">
+            <Fingerprint size={18} className="text-emerald-700 shrink-0" />
+            <span className="font-medium">Forensic ELA compression mapping, EXIF metadata inspection, and official gazette corroboration.</span>
           </div>
         </div>
 
         {/* Tab Selection */}
-        <div className="mt-6 pt-6 border-t border-slate-800 flex items-center space-x-2">
+        <div className="mt-6 pt-6 border-t border-slate-100 flex items-center space-x-2">
           <button
             onClick={() => {
               setActiveTab('text');
               setAuditResult(null);
             }}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition shadow-xs ${
               activeTab === 'text'
-                ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-900/30'
-                : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                ? 'bg-blue-50 text-blue-800 border-blue-300'
+                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
             }`}
           >
             Verify News / Policy Claim
@@ -177,10 +177,10 @@ export default function Verification() {
               setActiveTab('media');
               setAuditResult(null);
             }}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition shadow-xs ${
               activeTab === 'media'
-                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-900/30'
-                : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                ? 'bg-blue-50 text-blue-800 border-blue-300'
+                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
             }`}
           >
             Deepfake & Forensic Media Audit
@@ -189,11 +189,11 @@ export default function Verification() {
       </div>
 
       {/* Input Panels */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         {activeTab === 'text' ? (
           <form onSubmit={handleVerifyText} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Enter Suspicious Claim, Viral Message, or Policy Statement
               </label>
               <textarea
@@ -202,12 +202,12 @@ export default function Verification() {
                 value={claimText}
                 onChange={(e) => setClaimText(e.target.value)}
                 placeholder="e.g. Government is distributing ₹5,000 to all citizens under new solar initiative..."
-                className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Source News URL / Social Media Link (Optional)
               </label>
               <input
@@ -215,14 +215,14 @@ export default function Verification() {
                 value={sourceUrl}
                 onChange={(e) => setSourceUrl(e.target.value)}
                 placeholder="https://news-portal.com/claim-article"
-                className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
             <button
               type="submit"
               disabled={verifying || !claimText.trim()}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold py-3 rounded-xl shadow-lg transition"
+              className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs font-bold py-3 rounded-xl shadow-xs transition"
             >
               {verifying ? 'Querying PIB Fact Check & Gazette Archives...' : 'Verify Claim Against Official Sources'}
             </button>
@@ -230,7 +230,7 @@ export default function Verification() {
         ) : (
           <form onSubmit={handleAuditMedia} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Upload Suspicious Image, Video, or Audio Asset
               </label>
               <input
@@ -238,17 +238,17 @@ export default function Verification() {
                 required
                 accept="image/*,audio/*,video/*"
                 onChange={handleMediaFileChange}
-                className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+                className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#1e3a8a] file:text-white hover:file:bg-blue-800 cursor-pointer"
               />
               {mediaPreview && (
-                <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-700 max-h-56 flex items-center justify-center bg-black">
+                <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-200 max-h-56 flex items-center justify-center bg-slate-100">
                   <img src={mediaPreview} alt="Upload preview" className="max-h-56 object-contain" />
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Claim Context / Accompanying Caption
               </label>
               <input
@@ -256,14 +256,14 @@ export default function Verification() {
                 value={claimText}
                 onChange={(e) => setClaimText(e.target.value)}
                 placeholder="e.g. Official photo claiming to show bridge inauguration collapse..."
-                className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl px-3 py-2.5"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
             <button
               type="submit"
               disabled={verifying || !mediaFile}
-              className="w-full bg-gradient-to-r from-indigo-600 to-amber-600 hover:from-indigo-500 hover:to-amber-500 text-white text-xs font-bold py-3 rounded-xl shadow-lg transition"
+              className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs font-bold py-3 rounded-xl shadow-xs transition"
             >
               {verifying ? 'Running Error Level Analysis (ELA) & Metadata Forensics...' : 'Run Deepfake & Forensic Media Audit'}
             </button>
@@ -273,14 +273,14 @@ export default function Verification() {
 
       {/* Audit & Verification Results Card */}
       {auditResult && (
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6 animate-in fade-in duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
                 Official Verification Report
               </span>
-              <h2 className="text-lg font-extrabold text-white flex items-center space-x-2">
-                <CheckCheck size={20} className="text-emerald-400" />
+              <h2 className="text-lg font-extrabold text-[#0c2340] flex items-center space-x-2">
+                <CheckCheck size={20} className="text-emerald-700" />
                 <span>Verification Certificate & Forensic Analysis</span>
               </h2>
             </div>
@@ -288,7 +288,7 @@ export default function Verification() {
             {auditResult.share_token && (
               <button
                 onClick={() => copyShareLink(auditResult.share_token)}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-2 rounded-xl flex items-center space-x-1.5 transition self-start sm:self-auto"
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3 py-2 rounded-xl flex items-center space-x-1.5 transition self-start sm:self-auto shadow-xs"
               >
                 <Share2 size={13} />
                 <span>Share Public Certificate</span>
@@ -299,30 +299,30 @@ export default function Verification() {
           {/* Verdict Banner */}
           {auditResult.fact_check && (
             <div
-              className={`p-5 rounded-2xl border space-y-2 ${
+              className={`p-5 rounded-xl border space-y-2 ${
                 auditResult.fact_check.verdict === 'Verified'
-                  ? 'bg-emerald-950/50 border-emerald-800 text-emerald-200'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
                   : auditResult.fact_check.verdict === 'Contradicted'
-                  ? 'bg-red-950/50 border-red-800 text-red-200'
+                  ? 'bg-red-50 border-red-300 text-red-950'
                   : auditResult.fact_check.verdict === 'Misleading / Missing Context'
-                  ? 'bg-amber-950/50 border-amber-800 text-amber-200'
-                  : 'bg-slate-800/80 border-slate-700 text-slate-300'
+                  ? 'bg-amber-50 border-amber-300 text-amber-950'
+                  : 'bg-slate-50 border-slate-200 text-slate-900'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-base font-extrabold flex items-center space-x-2">
-                  {auditResult.fact_check.verdict === 'Verified' && <CheckCircle2 size={20} className="text-emerald-400" />}
-                  {auditResult.fact_check.verdict === 'Contradicted' && <XCircle size={20} className="text-red-400" />}
-                  {auditResult.fact_check.verdict === 'Misleading / Missing Context' && <AlertTriangle size={20} className="text-amber-400" />}
-                  {auditResult.fact_check.verdict === 'Insufficient Evidence' && <HelpCircle size={20} className="text-slate-400" />}
+                  {auditResult.fact_check.verdict === 'Verified' && <CheckCircle2 size={20} className="text-emerald-700" />}
+                  {auditResult.fact_check.verdict === 'Contradicted' && <XCircle size={20} className="text-red-700" />}
+                  {auditResult.fact_check.verdict === 'Misleading / Missing Context' && <AlertTriangle size={20} className="text-amber-700" />}
+                  {auditResult.fact_check.verdict === 'Insufficient Evidence' && <HelpCircle size={20} className="text-slate-500" />}
                   <span>Verdict: {auditResult.fact_check.verdict}</span>
                 </span>
-                <span className="text-xs font-mono font-bold bg-slate-900/60 px-2.5 py-1 rounded-lg">
+                <span className="text-xs font-mono font-bold bg-white/80 border border-slate-200 px-2.5 py-1 rounded-lg">
                   Confidence: {auditResult.fact_check.confidence_score * 100}%
                 </span>
               </div>
 
-              <p className="text-xs leading-relaxed text-slate-200 pt-1">
+              <p className="text-xs leading-relaxed pt-1">
                 {auditResult.fact_check.explanation}
               </p>
             </div>
@@ -330,9 +330,9 @@ export default function Verification() {
 
           {/* Media Forensic Audit Visualizer (ELA & Metadata) */}
           {auditResult.forensic_analysis && (
-            <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-4">
-              <div className="flex items-center space-x-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
-                <Fingerprint size={16} />
+            <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+              <div className="flex items-center space-x-2 text-blue-900 font-bold text-xs uppercase tracking-wider">
+                <Fingerprint size={16} className="text-blue-700" />
                 <span>Forensic Multimedia Inspection Output</span>
               </div>
 
@@ -340,10 +340,10 @@ export default function Verification() {
                 {/* ELA Visualizer */}
                 {auditResult.forensic_analysis.ela_visualization_url && (
                   <div>
-                    <span className="text-[11px] font-semibold text-slate-300 block mb-1">
+                    <span className="text-[11px] font-semibold text-slate-700 block mb-1">
                       Error Level Analysis (ELA) Compression Map:
                     </span>
-                    <div className="rounded-xl overflow-hidden border border-slate-700 bg-black">
+                    <div className="rounded-xl overflow-hidden border border-slate-300 bg-white">
                       <img
                         src={auditResult.forensic_analysis.ela_visualization_url}
                         alt="ELA Forensic Heatmap"
@@ -359,32 +359,32 @@ export default function Verification() {
                 {/* Detected Anomalies */}
                 <div className="space-y-3">
                   <div>
-                    <span className="text-[11px] font-semibold text-slate-300 block mb-1">
+                    <span className="text-[11px] font-semibold text-slate-700 block mb-1">
                       Manipulation Probability Score:
                     </span>
                     <div className="flex items-center space-x-3">
-                      <div className="flex-1 bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
                         <div
                           className={`h-full ${
-                            auditResult.forensic_analysis.manipulation_probability > 0.5 ? 'bg-red-500' : 'bg-emerald-500'
+                            auditResult.forensic_analysis.manipulation_probability > 0.5 ? 'bg-red-600' : 'bg-emerald-600'
                           }`}
                           style={{ width: `${auditResult.forensic_analysis.manipulation_probability * 100}%` }}
                         />
                       </div>
-                      <span className="font-mono text-xs font-bold text-slate-200">
+                      <span className="font-mono text-xs font-bold text-slate-900">
                         {auditResult.forensic_analysis.manipulation_probability * 100}%
                       </span>
                     </div>
                   </div>
 
                   <div>
-                    <span className="text-[11px] font-semibold text-slate-300 block mb-1">
+                    <span className="text-[11px] font-semibold text-slate-700 block mb-1">
                       Forensic Findings:
                     </span>
-                    <ul className="text-xs text-slate-300 space-y-1">
+                    <ul className="text-xs text-slate-700 space-y-1">
                       {auditResult.forensic_analysis.anomalies_detected?.map((a, aIdx) => (
                         <li key={aIdx} className="flex items-start space-x-1.5">
-                          <span className="text-amber-400 mt-0.5">•</span>
+                          <span className="text-amber-600 mt-0.5">•</span>
                           <span>{a}</span>
                         </li>
                       ))}
@@ -401,20 +401,20 @@ export default function Verification() {
 
           {/* Official Clickable Citations */}
           {auditResult.fact_check?.citations && auditResult.fact_check.citations.length > 0 && (
-            <div className="space-y-2 pt-2 border-t border-slate-800">
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+            <div className="space-y-2 pt-2 border-t border-slate-100">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
                 Official Corroborating Government Citations
               </span>
               <div className="space-y-2">
                 {auditResult.fact_check.citations.map((c, cIdx) => (
                   <div
                     key={cIdx}
-                    className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2"
+                    className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2"
                   >
                     <div>
-                      <h4 className="font-bold text-white">{c.source_name}</h4>
-                      <p className="text-[11px] text-slate-300 mt-0.5 italic">"{c.excerpt}"</p>
-                      <span className="text-[10px] text-slate-400 mt-1 block">
+                      <h4 className="font-bold text-[#0c2340]">{c.source_name}</h4>
+                      <p className="text-[11px] text-slate-600 mt-0.5 italic">"{c.excerpt}"</p>
+                      <span className="text-[10px] text-slate-500 mt-1 block">
                         Publication Date: {c.publication_date} • {c.relationship_to_claim}
                       </span>
                     </div>
@@ -422,7 +422,7 @@ export default function Verification() {
                       href={c.source_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-blue-600/30 hover:bg-blue-600/40 text-blue-300 border border-blue-500/40 px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1 shrink-0 self-start sm:self-auto"
+                      className="bg-white hover:bg-slate-100 text-blue-700 border border-slate-300 px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1 shrink-0 self-start sm:self-auto shadow-xs"
                     >
                       <span>Direct Official Source</span>
                       <ExternalLink size={11} />
@@ -437,9 +437,9 @@ export default function Verification() {
 
       {/* Verification History Section */}
       {history.length > 0 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
-            <Clock size={15} className="text-blue-400" />
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center space-x-2">
+            <Clock size={15} className="text-blue-700" />
             <span>Your Previous Fact Verification Audits</span>
           </h2>
 
@@ -447,27 +447,27 @@ export default function Verification() {
             {history.map((h) => (
               <div
                 key={h.id}
-                className="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700/70 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2"
+                className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2"
               >
                 <div className="space-y-1">
                   <span
                     className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase inline-block ${
                       h.verdict === 'Verified'
-                        ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                         : h.verdict === 'Contradicted'
-                        ? 'bg-red-950 text-red-300 border-red-800'
-                        : 'bg-amber-950 text-amber-300 border-amber-800'
+                        ? 'bg-red-100 text-red-800 border-red-300'
+                        : 'bg-amber-100 text-amber-800 border-amber-300'
                     }`}
                   >
                     {h.verdict}
                   </span>
-                  <p className="font-bold text-slate-200 line-clamp-1">{h.claim_text}</p>
-                  <p className="text-[11px] text-slate-400 line-clamp-1">{h.explanation}</p>
+                  <p className="font-bold text-slate-900 line-clamp-1">{h.claim_text}</p>
+                  <p className="text-[11px] text-slate-500 line-clamp-1">{h.explanation}</p>
                 </div>
 
                 <button
                   onClick={() => copyShareLink(h.share_token)}
-                  className="text-xs text-blue-400 hover:text-blue-300 flex items-center space-x-1 font-semibold shrink-0"
+                  className="text-xs text-blue-700 hover:text-blue-900 flex items-center space-x-1 font-semibold shrink-0"
                 >
                   <Share2 size={12} />
                   <span>Share Certificate</span>
