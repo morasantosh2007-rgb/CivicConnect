@@ -106,6 +106,15 @@ def sanitize_database_url(database_url: str) -> str:
         raw_pass = bracket_match.group(1)
         encoded_pass = urllib.parse.quote_plus(raw_pass)
         database_url = database_url[:bracket_match.start()] + ":" + encoded_pass + "@" + database_url[bracket_match.end():]
+
+    if database_url.count('@') > 1:
+        scheme_and_auth, _, host_and_db = database_url.rpartition('@')
+        if '://' in scheme_and_auth:
+            scheme, _, creds = scheme_and_auth.partition('://')
+            user, _, raw_pass = creds.partition(':')
+            encoded_pass = urllib.parse.quote_plus(raw_pass)
+            database_url = f"{scheme}://{user}:{encoded_pass}@{host_and_db}"
+
     return database_url
 
 def get_db_connection():

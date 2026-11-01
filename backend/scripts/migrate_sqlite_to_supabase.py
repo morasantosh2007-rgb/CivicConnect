@@ -50,6 +50,17 @@ def sanitize_database_url(database_url: str) -> str:
         database_url = database_url[:bracket_match.start()] + ":" + encoded_pass + "@" + database_url[bracket_match.end():]
         print(f"[Auto-Fix] Removed literal square brackets from password.")
 
+    # 3. Handle unencoded '@' in password when multiple '@' exist
+    # e.g., postgresql://postgres.ref:sanBhan@123@aws-0-eu-west-1.pooler.supabase.com:6543/postgres
+    if database_url.count('@') > 1:
+        scheme_and_auth, _, host_and_db = database_url.rpartition('@')
+        if '://' in scheme_and_auth:
+            scheme, _, creds = scheme_and_auth.partition('://')
+            user, _, raw_pass = creds.partition(':')
+            encoded_pass = urllib.parse.quote_plus(raw_pass)
+            database_url = f"{scheme}://{user}:{encoded_pass}@{host_and_db}"
+            print("[Auto-Fix] Safely URL-encoded special '@' character in your password.")
+
     return database_url
 
 def get_supabase_conn(database_url: str):
