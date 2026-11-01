@@ -95,12 +95,24 @@ class SupabaseConnectionWrapper:
         cur = self.cursor()
         return cur.execute(query, params)
 
+def sanitize_database_url(database_url: str) -> str:
+    if not database_url:
+        return ""
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    import re, urllib.parse
+    bracket_match = re.search(r":\[([^\]]+)\]@", database_url)
+    if bracket_match:
+        raw_pass = bracket_match.group(1)
+        encoded_pass = urllib.parse.quote_plus(raw_pass)
+        database_url = database_url[:bracket_match.start()] + ":" + encoded_pass + "@" + database_url[bracket_match.end():]
+    return database_url
+
 def get_db_connection():
-    db_url = getattr(settings, "DATABASE_URL", None) or os.getenv("DATABASE_URL")
-    if db_url and db_url.startswith(("postgres://", "postgresql://")):
+    raw_url = getattr(settings, "DATABASE_URL", None) or os.getenv("DATABASE_URL")
+    if raw_url and raw_url.startswith(("postgres://", "postgresql://")):
         import psycopg2
-        if db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        db_url = sanitize_database_url(raw_url)
         pg_conn = psycopg2.connect(db_url)
         return SupabaseConnectionWrapper(pg_conn)
 

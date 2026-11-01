@@ -33,17 +33,42 @@ except ImportError:
     print("[ERROR] psycopg2 is not installed. Please run: pip install psycopg2-binary")
     sys.exit(1)
 
+import re
+import urllib.parse
 from app.core.config import settings
 
-def get_supabase_conn(database_url: str):
-    # Normalize postgres:// to postgresql://
+def sanitize_database_url(database_url: str) -> str:
+    # 1. Normalize postgres:// to postgresql://
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
-    
-    # Supabase direct/pooler connection
-    conn = psycopg2.connect(database_url)
-    conn.autocommit = False
-    return conn
+
+    # 2. Check and remove accidental literal brackets [your-password]
+    bracket_match = re.search(r":\[([^\]]+)\]@", database_url)
+    if bracket_match:
+        raw_pass = bracket_match.group(1)
+        encoded_pass = urllib.parse.quote_plus(raw_pass)
+        database_url = database_url[:bracket_match.start()] + ":" + encoded_pass + "@" + database_url[bracket_match.end():]
+        print(f"[Auto-Fix] Removed literal square brackets from password.")
+
+    return database_url
+
+def get_supabase_conn(database_url: str):
+    clean_url = sanitize_database_url(database_url)
+    try:
+        conn = psycopg2.connect(clean_url)
+        conn.autocommit = False
+        return conn
+    except psycopg2.OperationalError as e:
+        err_msg = str(e)
+        if "could not translate host name" in err_msg and "db." in clean_url:
+            print("\n[DIAGNOSTIC TIP - IPv6 vs IPv4 Issue]")
+            print("Direct connections (db.[project-ref].supabase.co:5432) require IPv6, which is often not supported by local ISPs/networks.")
+            print("Instead, use Supabase's IPv4 Connection Pooler URI (Port 6543):")
+            print("  1. In Supabase Dashboard, go to: Project Settings -> Database -> Connection string.")
+            print("  2. Select 'Transaction' or 'Session' Pooler (Mode).")
+            print("  3. The host will look like: aws-0-[region].pooler.supabase.com (Port 6543).")
+            print("  4. The user will be: postgres.[project-ref]\n")
+        raise e
 
 def execute_schema(pg_conn):
     schema_path = BASE_DIR / "supabase_schema.sql"
