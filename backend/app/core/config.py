@@ -20,7 +20,11 @@ class Settings:
     API_V1_STR: str = "/api/v1"
 
     # Database
+    BASE_DIR: Path = BASE_DIR
     DATABASE_PATH: Path = DATA_DIR / "civicconnect.db"
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
+    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
     UPLOAD_DIR: Path = UPLOAD_DIR
 
     # Security
