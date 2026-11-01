@@ -135,25 +135,25 @@ export default function Verification() {
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Header — Government Light Theme */}
+      {/* Header — 100% Fully Localized */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center space-x-2 text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 mb-2">
               <CheckCheck size={13} className="text-emerald-700" />
-              <span>Real-Time Fact Verification & Deepfake Audit</span>
+              <span>{t('verify_header_badge')}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
               {t('nav_verify')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
-              Verify viral news, government scheme rumors, deepfake videos, altered photographs, and synthetic audio recordings. Grounded in official PIB Fact Check archives.
+              {t('verify_header_desc')}
             </p>
           </div>
 
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700 flex items-center space-x-2 max-w-md">
             <Fingerprint size={18} className="text-emerald-700 shrink-0" />
-            <span className="font-medium">Forensic ELA compression mapping, EXIF metadata inspection, and official gazette corroboration.</span>
+            <span className="font-medium">{t('forensic_guarantee')}</span>
           </div>
         </div>
 
@@ -170,7 +170,7 @@ export default function Verification() {
                 : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
             }`}
           >
-            Verify News / Policy Claim
+            {t('tab_verify_claim')}
           </button>
           <button
             onClick={() => {
@@ -183,7 +183,7 @@ export default function Verification() {
                 : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
             }`}
           >
-            Deepfake & Forensic Media Audit
+            {t('tab_audit_media')}
           </button>
         </div>
       </div>
@@ -194,27 +194,27 @@ export default function Verification() {
           <form onSubmit={handleVerifyText} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Enter Suspicious Claim, Viral Message, or Policy Statement
+                {t('claim_label')}
               </label>
               <textarea
                 rows={3}
                 required
                 value={claimText}
                 onChange={(e) => setClaimText(e.target.value)}
-                placeholder="e.g. Government is distributing ₹5,000 to all citizens under new solar initiative..."
+                placeholder={t('claim_placeholder')}
                 className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Source News URL / Social Media Link (Optional)
+                {t('source_url_label')}
               </label>
               <input
                 type="url"
                 value={sourceUrl}
                 onChange={(e) => setSourceUrl(e.target.value)}
-                placeholder="https://news-portal.com/claim-article"
+                placeholder={t('source_url_placeholder')}
                 className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
@@ -224,14 +224,14 @@ export default function Verification() {
               disabled={verifying || !claimText.trim()}
               className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs font-bold py-3 rounded-xl shadow-xs transition"
             >
-              {verifying ? 'Querying PIB Fact Check & Gazette Archives...' : 'Verify Claim Against Official Sources'}
+              {verifying ? t('verifying_claim_btn') : t('verify_claim_btn')}
             </button>
           </form>
         ) : (
           <form onSubmit={handleAuditMedia} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Upload Suspicious Image, Video, or Audio Asset
+                {t('upload_media_label')}
               </label>
               <input
                 type="file"
@@ -249,14 +249,14 @@ export default function Verification() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Claim Context / Accompanying Caption
+                {t('context_label')}
               </label>
               <input
                 type="text"
                 value={claimText}
                 onChange={(e) => setClaimText(e.target.value)}
-                placeholder="e.g. Official photo claiming to show bridge inauguration collapse..."
-                className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
+                placeholder={t('context_placeholder')}
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -265,7 +265,7 @@ export default function Verification() {
               disabled={verifying || !mediaFile}
               className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs font-bold py-3 rounded-xl shadow-xs transition"
             >
-              {verifying ? 'Running Error Level Analysis (ELA) & Metadata Forensics...' : 'Run Deepfake & Forensic Media Audit'}
+              {verifying ? t('running_audit_btn') : t('run_media_audit_btn')}
             </button>
           </form>
         )}
@@ -277,11 +277,11 @@ export default function Verification() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                Official Verification Report
+                {t('cert_title')}
               </span>
               <h2 className="text-lg font-extrabold text-[#0c2340] flex items-center space-x-2">
                 <CheckCheck size={20} className="text-emerald-700" />
-                <span>Verification Certificate & Forensic Analysis</span>
+                <span>{t('cert_subtitle')}</span>
               </h2>
             </div>
 
@@ -291,7 +291,7 @@ export default function Verification() {
                 className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3 py-2 rounded-xl flex items-center space-x-1.5 transition self-start sm:self-auto shadow-xs"
               >
                 <Share2 size={13} />
-                <span>Share Public Certificate</span>
+                <span>{t('share_public_cert')}</span>
               </button>
             )}
           </div>
@@ -315,10 +315,10 @@ export default function Verification() {
                   {auditResult.fact_check.verdict === 'Contradicted' && <XCircle size={20} className="text-red-700" />}
                   {auditResult.fact_check.verdict === 'Misleading / Missing Context' && <AlertTriangle size={20} className="text-amber-700" />}
                   {auditResult.fact_check.verdict === 'Insufficient Evidence' && <HelpCircle size={20} className="text-slate-500" />}
-                  <span>Verdict: {auditResult.fact_check.verdict}</span>
+                  <span>{t('verdict_label')} {auditResult.fact_check.verdict}</span>
                 </span>
                 <span className="text-xs font-mono font-bold bg-white/80 border border-slate-200 px-2.5 py-1 rounded-lg">
-                  Confidence: {auditResult.fact_check.confidence_score * 100}%
+                  {t('confidence_label')} {auditResult.fact_check.confidence_score * 100}%
                 </span>
               </div>
 
@@ -333,7 +333,7 @@ export default function Verification() {
             <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
               <div className="flex items-center space-x-2 text-blue-900 font-bold text-xs uppercase tracking-wider">
                 <Fingerprint size={16} className="text-blue-700" />
-                <span>Forensic Multimedia Inspection Output</span>
+                <span>{t('forensic_inspection_title')}</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -341,7 +341,7 @@ export default function Verification() {
                 {auditResult.forensic_analysis.ela_visualization_url && (
                   <div>
                     <span className="text-[11px] font-semibold text-slate-700 block mb-1">
-                      Error Level Analysis (ELA) Compression Map:
+                      {t('ela_title')}
                     </span>
                     <div className="rounded-xl overflow-hidden border border-slate-300 bg-white">
                       <img
@@ -351,7 +351,7 @@ export default function Verification() {
                       />
                     </div>
                     <span className="text-[10px] text-slate-500 mt-1 block">
-                      Bright highlighted clusters indicate localized digital re-saving or spliced editing.
+                      {t('ela_desc')}
                     </span>
                   </div>
                 )}
@@ -360,7 +360,7 @@ export default function Verification() {
                 <div className="space-y-3">
                   <div>
                     <span className="text-[11px] font-semibold text-slate-700 block mb-1">
-                      Manipulation Probability Score:
+                      {t('manipulation_prob')}
                     </span>
                     <div className="flex items-center space-x-3">
                       <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
@@ -379,7 +379,7 @@ export default function Verification() {
 
                   <div>
                     <span className="text-[11px] font-semibold text-slate-700 block mb-1">
-                      Forensic Findings:
+                      {t('forensic_findings')}
                     </span>
                     <ul className="text-xs text-slate-700 space-y-1">
                       {auditResult.forensic_analysis.anomalies_detected?.map((a, aIdx) => (
@@ -403,7 +403,7 @@ export default function Verification() {
           {auditResult.fact_check?.citations && auditResult.fact_check.citations.length > 0 && (
             <div className="space-y-2 pt-2 border-t border-slate-100">
               <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                Official Corroborating Government Citations
+                {t('official_citations_title')}
               </span>
               <div className="space-y-2">
                 {auditResult.fact_check.citations.map((c, cIdx) => (
@@ -424,7 +424,7 @@ export default function Verification() {
                       rel="noopener noreferrer"
                       className="bg-white hover:bg-slate-100 text-blue-700 border border-slate-300 px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1 shrink-0 self-start sm:self-auto shadow-xs"
                     >
-                      <span>Direct Official Source</span>
+                      <span>{t('direct_source_btn')}</span>
                       <ExternalLink size={11} />
                     </a>
                   </div>
@@ -440,7 +440,7 @@ export default function Verification() {
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center space-x-2">
             <Clock size={15} className="text-blue-700" />
-            <span>Your Previous Fact Verification Audits</span>
+            <span>{t('prev_audits_title')}</span>
           </h2>
 
           <div className="space-y-2.5">
@@ -470,7 +470,7 @@ export default function Verification() {
                   className="text-xs text-blue-700 hover:text-blue-900 flex items-center space-x-1 font-semibold shrink-0"
                 >
                   <Share2 size={12} />
-                  <span>Share Certificate</span>
+                  <span>{t('share_cert_btn')}</span>
                 </button>
               </div>
             ))}

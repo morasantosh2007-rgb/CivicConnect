@@ -22,10 +22,10 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const navItems = [
     { to: '/', label: t('nav_home'), icon: LayoutDashboard },
-    { to: '/policies', label: t('nav_policies'), icon: FileText, badge: 'Official' },
-    { to: '/services', label: t('nav_services'), icon: Briefcase, badge: 'Agent' },
-    { to: '/grievances', label: t('nav_grievances'), icon: AlertTriangle, badge: 'Live Feed' },
-    { to: '/verify', label: t('nav_verify'), icon: CheckCheck, badge: 'Forensic' },
+    { to: '/policies', label: t('nav_policies'), icon: FileText, badge: t('verified_platform', 'Official') },
+    { to: '/services', label: t('nav_services'), icon: Briefcase, badge: 'AI' },
+    { to: '/grievances', label: t('nav_grievances'), icon: AlertTriangle, badge: 'Live' },
+    { to: '/verify', label: t('nav_verify'), icon: CheckCheck, badge: 'PIB' },
     { to: '/assistant', label: t('nav_assistant'), icon: Bot, highlight: true },
     { to: '/profile', label: t('nav_profile'), icon: UserCheck },
     { to: '/settings', label: t('nav_settings'), icon: Settings },
@@ -50,7 +50,7 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="flex flex-col h-full overflow-y-auto px-4 py-6">
           {/* Mobile close button */}
           <div className="flex items-center justify-between md:hidden pb-4 mb-4 border-b border-slate-200">
-            <span className="font-bold text-sm text-slate-800">Navigation Menu</span>
+            <span className="font-bold text-sm text-slate-800">{t('citizen_governance')}</span>
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100"
@@ -62,7 +62,7 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Navigation Links */}
           <div className="space-y-1">
             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 pb-2">
-              Citizen Governance
+              {t('citizen_governance')}
             </div>
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -100,8 +100,8 @@ export default function Sidebar({ isOpen, onClose }) {
             {isOfficerOrAdmin() && (
               <div className="pt-4 mt-4 border-t border-slate-200 space-y-1">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-amber-700 px-3 pb-2 flex items-center justify-between">
-                  <span>Administrative Control</span>
-                  <span className="text-[10px] bg-amber-100 text-amber-800 font-semibold px-1.5 py-0.5 rounded">Authorized</span>
+                  <span>{t('admin_control')}</span>
+                  <span className="text-[10px] bg-amber-100 text-amber-800 font-semibold px-1.5 py-0.5 rounded">{t('authorized')}</span>
                 </div>
                 <NavLink
                   to="/admin"
@@ -127,9 +127,9 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Footer Slogan & Official Portal Reference */}
         <div className="p-4 border-t border-slate-200 bg-slate-50">
           <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-xs">
-            <p className="text-[11px] font-bold text-slate-800">Grounded in Official Sources</p>
+            <p className="text-[11px] font-bold text-slate-800">{t('grounded_sources')}</p>
             <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
-              PIB Releases • myScheme • National Portals • Open Gov Data
+              {t('grounded_sources_desc')}
             </p>
             <a
               href="https://india.gov.in"
@@ -137,7 +137,7 @@ export default function Sidebar({ isOpen, onClose }) {
               rel="noopener noreferrer"
               className="mt-2 text-[10px] text-blue-700 hover:text-blue-900 flex items-center space-x-1 font-semibold"
             >
-              <span>india.gov.in (National Portal)</span>
+              <span>{t('national_portal_link')}</span>
               <ExternalLink size={10} />
             </a>
           </div>

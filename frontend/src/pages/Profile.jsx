@@ -19,7 +19,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 
 export default function Profile() {
-  const { language } = useLanguage();
+  const { language, supportedLanguages, t } = useLanguage();
+  const currentLangObj = supportedLanguages?.find(l => l.code === language);
   const { user, profile, updateProfile } = useAuth();
 
   const [digilockerStatus, setDigilockerStatus] = useState(null);
@@ -110,7 +111,7 @@ export default function Profile() {
 
   return (
     <div className="space-y-6 pb-16 max-w-4xl mx-auto">
-      {/* Header — Government White Theme */}
+      {/* Header — 100% Fully Localized */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
@@ -121,11 +122,11 @@ export default function Profile() {
               <h1 className="text-xl font-extrabold text-[#0c2340]">{user?.full_name}</h1>
               <p className="text-xs text-slate-500">{user?.email}</p>
               <div className="mt-1 flex items-center space-x-2">
-                <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded border border-blue-200 uppercase">
-                  {user?.role}
+                <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded border border-blue-200">
+                  {user?.role === 'citizen' ? t('citizen_role') : (user?.role === 'municipal_officer' ? t('officer_role') : (user?.role === 'department_admin' ? t('admin_role') : t('platform_admin_role')))}
                 </span>
                 <span className="text-[10px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded border border-slate-200">
-                  Preferred Language: {language.toUpperCase()}
+                  {t('preferred_language')}: {currentLangObj?.native || language.toUpperCase()}
                 </span>
               </div>
             </div>
@@ -138,7 +139,7 @@ export default function Profile() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
             <ShieldCheck size={20} className="text-blue-700" />
-            <h2 className="text-base font-bold text-[#0c2340]">DigiLocker Integration Adapter</h2>
+            <h2 className="text-base font-bold text-[#0c2340]">{t('digilocker_adapter_title')}</h2>
           </div>
           <span className="text-[10px] font-mono bg-blue-50 text-blue-800 font-semibold px-2.5 py-1 rounded-full border border-blue-200">
             {digilockerStatus?.status || 'Active Adapter'}
@@ -151,9 +152,9 @@ export default function Profile() {
 
         <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="space-y-1">
-            <span className="font-bold text-slate-800 block">MeitY Partner Onboarding Information</span>
+            <span className="font-bold text-slate-800 block">{t('digilocker_partner_info')}</span>
             <p className="text-slate-500 text-[11px]">
-              Production Requester access requires organization agreement with Digital India Corporation.
+              {t('digilocker_partner_desc')}
             </p>
           </div>
           <div className="flex items-center space-x-2">
@@ -163,14 +164,14 @@ export default function Profile() {
               rel="noopener noreferrer"
               className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold px-3 py-2 rounded-xl flex items-center space-x-1 shadow-xs"
             >
-              <span>Partner Specs</span>
+              <span>{t('partner_specs')}</span>
               <ExternalLink size={12} />
             </a>
             <button
               onClick={handleConnectDigilocker}
               className="bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-xs transition"
             >
-              Connect DigiLocker
+              {t('connect_digilocker')}
             </button>
           </div>
         </div>
@@ -182,23 +183,23 @@ export default function Profile() {
           <div>
             <h2 className="text-base font-bold text-[#0c2340] flex items-center space-x-2">
               <FileCheck2 size={18} className="text-blue-700" />
-              <span>Citizen Eligibility Profile Attributes</span>
+              <span>{t('eligibility_attributes_title')}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              These verified or declared attributes power your personalized scheme matching across all state and central policies.
+              {t('eligibility_attributes_desc')}
             </p>
           </div>
           {saveSuccess && (
             <span className="text-xs text-emerald-700 font-bold flex items-center space-x-1">
               <CheckCircle2 size={14} />
-              <span>Saved Successfully!</span>
+              <span>{t('saved_success')}</span>
             </span>
           )}
         </div>
 
         <form onSubmit={handleSaveProfile} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Age (Years)</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('age_label')}</label>
             <input
               type="number"
               value={formData.age}
@@ -209,20 +210,20 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Gender</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('gender_label')}</label>
             <select
               value={formData.gender}
               onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
               className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other / Third Gender</option>
+              <option value="Male">{t('male')}</option>
+              <option value="Female">{t('female')}</option>
+              <option value="Other">{t('other_gender')}</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">State / Union Territory</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('state_label')}</label>
             <input
               type="text"
               value={formData.state}
@@ -233,7 +234,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">District</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('district_label')}</label>
             <input
               type="text"
               value={formData.district}
@@ -244,7 +245,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Annual Family Income (₹)</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('income_label')}</label>
             <input
               type="number"
               value={formData.annual_income}
@@ -255,7 +256,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Social Category</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('category_label')}</label>
             <select
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -270,27 +271,27 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Employment / Occupation</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('occupation_label')}</label>
             <input
               type="text"
               value={formData.occupation}
               onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-              placeholder="e.g. Farmer, Electrician, Student, Software Engineer"
+              placeholder={t('occupation_placeholder')}
               className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Disability Status</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('disability_label')}</label>
             <select
               value={formData.disability_status}
               onChange={(e) => setFormData({ ...formData, disability_status: e.target.value })}
               className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
             >
-              <option value="None">None / General</option>
-              <option value="Locomotor">Locomotor Disability (40%+)</option>
-              <option value="Visual">Visual Impairment (40%+)</option>
-              <option value="Hearing">Hearing Impairment (40%+)</option>
+              <option value="None">{t('disability_none')}</option>
+              <option value="Locomotor">{t('disability_locomotor')}</option>
+              <option value="Visual">{t('disability_visual')}</option>
+              <option value="Hearing">{t('disability_hearing')}</option>
             </select>
           </div>
 
@@ -301,7 +302,7 @@ export default function Profile() {
               className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs transition flex items-center justify-center space-x-2"
             >
               <Save size={15} />
-              <span>{saving ? 'Saving Profile...' : 'Save Profile & Update Scheme Matcher'}</span>
+              <span>{saving ? t('saving_profile_btn') : t('save_profile_btn')}</span>
             </button>
           </div>
         </form>

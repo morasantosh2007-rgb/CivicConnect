@@ -20,7 +20,8 @@ import { useAuth } from '../context/AuthContext';
 import VoicePlayer from '../components/VoicePlayer';
 
 export default function Policies() {
-  const { language, t } = useLanguage();
+  const { language, supportedLanguages, t } = useLanguage();
+  const currentLangObj = supportedLanguages?.find(l => l.code === language);
   const { profile } = useAuth();
 
   const [policies, setPolicies] = useState([]);
@@ -126,21 +127,34 @@ export default function Policies() {
     'Official Announcement'
   ];
 
+  const getPolicyCategoryLabel = (cat) => {
+    switch (cat) {
+      case 'All Categories': return t('all_categories');
+      case 'Agriculture & Farmers Welfare': return t('cat_agriculture');
+      case 'Energy & Sustainability': return t('cat_energy');
+      case 'Healthcare': return t('cat_healthcare');
+      case 'Education & Scholarships': return t('cat_education');
+      case 'Skill Development & Livelihood': return t('cat_skill');
+      case 'Official Announcement': return t('cat_official_announcement');
+      default: return cat;
+    }
+  };
+
   return (
     <div className="space-y-6 pb-16">
-      {/* Header & Controls — Government Light Theme */}
+      {/* Header & Controls — 100% Fully Localized */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center space-x-2 text-xs font-semibold text-blue-800 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 mb-2">
               <FileText size={13} className="text-blue-700" />
-              <span>Official Government Policies & Citizen Schemes</span>
+              <span>{t('policies_header_badge')}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
               {t('nav_policies')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
-              Understand legal rights, welfare policies, and government announcements in your regional language. Grounded strictly in official PIB and gazette notifications.
+              {t('policies_header_desc')}
             </p>
           </div>
 
@@ -158,7 +172,7 @@ export default function Policies() {
               className="bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-slate-300 transition flex items-center space-x-1.5 shadow-xs"
             >
               <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-              <span>Refresh PIB</span>
+              <span>{t('refresh_pib')}</span>
             </button>
           </div>
         </div>
@@ -172,7 +186,7 @@ export default function Policies() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && fetchPolicies()}
-              placeholder="Search scheme name, ministry, or benefits..."
+              placeholder={t('search_policies_placeholder')}
               className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </div>
@@ -184,7 +198,7 @@ export default function Policies() {
               className="bg-white border border-slate-300 text-slate-800 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-xs"
             >
               {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>{getPolicyCategoryLabel(c)}</option>
               ))}
             </select>
 
@@ -196,7 +210,7 @@ export default function Policies() {
                   : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
               }`}
             >
-              Welfare Schemes Only
+              {t('welfare_schemes_only')}
             </button>
           </div>
         </div>
@@ -208,13 +222,13 @@ export default function Policies() {
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
               <Volume2 size={16} />
-              <span>Playing Voice Explanation: {activeSpeech.title}</span>
+              <span>{t('now_playing')} {activeSpeech.title}</span>
             </span>
             <button
               onClick={() => setActiveSpeech(null)}
               className="text-xs text-slate-500 hover:text-slate-800 font-semibold"
             >
-              Close
+              {t('close')}
             </button>
           </div>
           <VoicePlayer text={activeSpeech.text} title={activeSpeech.title} />
@@ -246,7 +260,7 @@ export default function Policies() {
                 </h3>
                 {p.is_scheme === 1 && (
                   <span className="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-200 shrink-0">
-                    Scheme
+                    {t('scheme_badge')}
                   </span>
                 )}
               </div>
@@ -259,7 +273,7 @@ export default function Policies() {
               {p.benefits_description && (
                 <div className="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-700 block mb-1">
-                    Entitlements & Benefits
+                    {t('entitlements_benefits')}
                   </span>
                   <p className="text-xs text-slate-700 leading-relaxed">{p.benefits_description}</p>
                 </div>
@@ -268,7 +282,7 @@ export default function Policies() {
               {p.affected_citizens && (
                 <div className="mt-3 inline-flex items-center space-x-1.5 text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">
                   <Users size={12} className="text-amber-600" />
-                  <span>Beneficiary Group: {p.affected_citizens}</span>
+                  <span>{t('beneficiary_group')} {p.affected_citizens}</span>
                 </div>
               )}
             </div>
@@ -284,7 +298,7 @@ export default function Policies() {
                 className="text-blue-700 hover:text-blue-900 font-semibold flex items-center space-x-1 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition"
               >
                 <Volume2 size={13} />
-                <span>Listen ({language.toUpperCase()})</span>
+                <span>{t('listen_in_lang')} {currentLangObj?.native || language.toUpperCase()}</span>
               </button>
 
               <div className="flex items-center space-x-2">
@@ -294,7 +308,7 @@ export default function Policies() {
                   rel="noopener noreferrer"
                   className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1 transition shadow-xs"
                 >
-                  <span>Official Portal</span>
+                  <span>{t('official_portal_btn')}</span>
                   <ExternalLink size={12} />
                 </a>
               </div>
@@ -311,10 +325,10 @@ export default function Policies() {
               <div>
                 <h2 className="text-lg font-extrabold text-[#0c2340] flex items-center space-x-2">
                   <FileCheck2 size={20} className="text-blue-700" />
-                  <span>Personalized Scheme Eligibility Engine</span>
+                  <span>{t('eligibility_engine_title')}</span>
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Compares your verified or declared profile against official statutory rules.
+                  {t('eligibility_engine_desc')}
                 </p>
               </div>
               <button
@@ -328,7 +342,7 @@ export default function Policies() {
             {/* Input Form */}
             <form onSubmit={handleEvaluateEligibility} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Age (Years)</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">{t('age_label')}</label>
                 <input
                   type="number"
                   value={eligibilityForm.age}
@@ -339,7 +353,7 @@ export default function Policies() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Annual Household Income (₹)</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">{t('income_label')}</label>
                 <input
                   type="number"
                   value={eligibilityForm.annual_income}
@@ -350,7 +364,7 @@ export default function Policies() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">State / Union Territory</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">{t('state_label')}</label>
                 <input
                   type="text"
                   value={eligibilityForm.state}
@@ -361,13 +375,13 @@ export default function Policies() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Social Category</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">{t('category_label')}</label>
                 <select
                   value={eligibilityForm.category}
                   onChange={(e) => setEligibilityForm({ ...eligibilityForm, category: e.target.value })}
                   className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
-                  <option value="">Select Category</option>
+                  <option value="">{t('select_category')}</option>
                   <option value="General">General</option>
                   <option value="OBC">OBC (Other Backward Classes)</option>
                   <option value="SC">SC (Scheduled Caste)</option>
@@ -377,19 +391,19 @@ export default function Policies() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Employment / Student Status</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">{t('employment_label')}</label>
                 <select
                   value={eligibilityForm.employment_status}
                   onChange={(e) => setEligibilityForm({ ...eligibilityForm, employment_status: e.target.value })}
                   className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
-                  <option value="">Select Status</option>
-                  <option value="student">Student (Pursuing Higher Education)</option>
-                  <option value="farmer">Farmer / Cultivator</option>
-                  <option value="artisan">Artisan / Traditional Craftsperson</option>
-                  <option value="self_employed">Self-employed / Small Business</option>
-                  <option value="salaried">Salaried Employee</option>
-                  <option value="unemployed">Unemployed</option>
+                  <option value="">{t('select_status')}</option>
+                  <option value="student">{t('status_student')}</option>
+                  <option value="farmer">{t('status_farmer')}</option>
+                  <option value="artisan">{t('status_artisan')}</option>
+                  <option value="self_employed">{t('status_self_employed')}</option>
+                  <option value="salaried">{t('status_salaried')}</option>
+                  <option value="unemployed">{t('status_unemployed')}</option>
                 </select>
               </div>
 
@@ -399,7 +413,7 @@ export default function Policies() {
                   disabled={evaluating}
                   className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs font-bold py-3 rounded-xl shadow-xs transition"
                 >
-                  {evaluating ? 'Evaluating Statutory Conditions...' : 'Calculate Eligible Schemes'}
+                  {evaluating ? t('evaluating_btn') : t('calc_eligible_btn')}
                 </button>
               </div>
             </form>
@@ -409,9 +423,9 @@ export default function Policies() {
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-slate-900">
-                    Evaluation Results ({eligibilityResults.length} Schemes Analyzed)
+                    {t('eval_results_title')} ({eligibilityResults.length} {t('schemes_analyzed')})
                   </h3>
-                  <span className="text-[10px] text-slate-500">Strictly grounded in official criteria</span>
+                  <span className="text-[10px] text-slate-500">{t('grounded_official_criteria')}</span>
                 </div>
 
                 <div className="space-y-3">
@@ -432,14 +446,20 @@ export default function Policies() {
                           }`}
                         >
                           {r.outcome === 'Potentially eligible' ? <CheckCircle2 size={13} /> : <AlertCircle size={13} />}
-                          <span>{r.outcome}</span>
+                          <span>
+                            {r.outcome === 'Potentially eligible'
+                              ? t('outcome_potentially_eligible')
+                              : r.outcome === 'Additional information required'
+                              ? t('outcome_additional_info')
+                              : t('outcome_not_eligible')}
+                          </span>
                         </span>
                       </div>
 
                       {/* Satisfied checklist */}
                       {r.conditions_satisfied.length > 0 && (
                         <div className="space-y-1">
-                          <span className="text-[11px] font-bold text-emerald-800">Conditions Satisfied:</span>
+                          <span className="text-[11px] font-bold text-emerald-800">{t('conditions_satisfied_label')}</span>
                           <ul className="text-xs text-slate-700 space-y-0.5">
                             {r.conditions_satisfied.map((c, cI) => (
                               <li key={cI} className="flex items-center space-x-1.5">
@@ -454,7 +474,7 @@ export default function Policies() {
                       {/* Not satisfied conditions */}
                       {r.conditions_not_satisfied.length > 0 && (
                         <div className="space-y-1">
-                          <span className="text-[11px] font-bold text-red-800">Conditions Not Met:</span>
+                          <span className="text-[11px] font-bold text-red-800">{t('conditions_not_met_label')}</span>
                           <ul className="text-xs text-slate-700 space-y-0.5">
                             {r.conditions_not_satisfied.map((c, cI) => (
                               <li key={cI} className="flex items-center space-x-1.5">
@@ -469,7 +489,7 @@ export default function Policies() {
                       {/* Missing info */}
                       {r.missing_information.length > 0 && (
                         <div className="space-y-1">
-                          <span className="text-[11px] font-bold text-amber-800">Additional Information Needed:</span>
+                          <span className="text-[11px] font-bold text-amber-800">{t('additional_info_needed_label')}</span>
                           <ul className="text-xs text-slate-700 space-y-0.5">
                             {r.missing_information.map((m, mI) => (
                               <li key={mI} className="flex items-center space-x-1.5">
@@ -484,7 +504,7 @@ export default function Policies() {
                       {/* Required Documents */}
                       {r.required_documents.length > 0 && (
                         <div className="bg-white p-2.5 rounded-xl border border-slate-200 text-[11px] text-slate-700">
-                          <span className="font-bold text-slate-800 block mb-1">Required Verification Documents:</span>
+                          <span className="font-bold text-slate-800 block mb-1">{t('required_docs_label')}</span>
                           <div className="flex flex-wrap gap-1.5">
                             {r.required_documents.map((doc, dI) => (
                               <span key={dI} className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-mono text-[10px] text-slate-800">
@@ -502,7 +522,7 @@ export default function Policies() {
                           rel="noopener noreferrer"
                           className="text-blue-700 hover:underline flex items-center space-x-1"
                         >
-                          <span>Official Rules Gazette</span>
+                          <span>{t('rules_gazette_link')}</span>
                           <ExternalLink size={11} />
                         </a>
 
@@ -513,7 +533,7 @@ export default function Policies() {
                             rel="noopener noreferrer"
                             className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1 shadow-xs"
                           >
-                            <span>Apply on Official Portal</span>
+                            <span>{t('apply_portal_btn')}</span>
                             <ExternalLink size={11} />
                           </a>
                         )}

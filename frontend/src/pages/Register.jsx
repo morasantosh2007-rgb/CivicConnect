@@ -53,10 +53,10 @@ export default function Register() {
             <ShieldCheck size={26} className="text-amber-400" />
           </div>
           <h1 className="text-2xl font-extrabold text-[#0c2340] tracking-tight">
-            Create Citizen Account
+            {t('register_title')}
           </h1>
           <p className="text-xs text-slate-500">
-            Join the national governance platform in your preferred regional language.
+            {t('register_subtitle')}
           </p>
         </div>
 
@@ -68,7 +68,7 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Full Legal Name</label>
+            <label className="block font-semibold text-slate-700 mb-1">{t('fullname_label')}</label>
             <div className="relative">
               <User size={16} className="absolute left-3 top-3 text-slate-400" />
               <input
@@ -84,7 +84,7 @@ export default function Register() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Email Address</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('email_label')}</label>
               <div className="relative">
                 <Mail size={16} className="absolute left-3 top-3 text-slate-400" />
                 <input
@@ -99,7 +99,7 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Password</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('password_label')}</label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-3 text-slate-400" />
                 <input
@@ -107,7 +107,7 @@ export default function Register() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Min 6 characters"
+                  placeholder={t('password_placeholder')}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
@@ -118,7 +118,7 @@ export default function Register() {
             {/* Preferred Language Selection */}
             <div>
               <label className="block font-semibold text-slate-700 mb-1">
-                Preferred Regional Language
+                {t('preferred_language')}
               </label>
               <select
                 value={formData.preferred_language}
@@ -135,34 +135,34 @@ export default function Register() {
 
             {/* Account Role */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Account Role</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('role_label')}</label>
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
               >
-                <option value="citizen">Citizen (General Public)</option>
-                <option value="municipal_officer">Municipal Officer (Triage & Field)</option>
-                <option value="department_admin">Department Administrator</option>
-                <option value="platform_admin">Platform Administrator</option>
+                <option value="citizen">{t('citizen_role')}</option>
+                <option value="municipal_officer">{t('officer_role')}</option>
+                <option value="department_admin">{t('admin_role')}</option>
+                <option value="platform_admin">{t('platform_admin_role')}</option>
               </select>
             </div>
           </div>
 
           {formData.role !== 'citizen' && (
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Department</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('department_label')}</label>
               <select
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
               >
-                <option value="Public Works & Roads Department">Public Works & Roads Department</option>
-                <option value="Municipal Water Supply & Sewerage Board">Municipal Water Supply & Sewerage Board</option>
-                <option value="Sanitation & Solid Waste Management">Sanitation & Solid Waste Management</option>
-                <option value="Stormwater Drainage & Flood Control">Stormwater Drainage & Flood Control</option>
-                <option value="Electrical & Public Lighting Authority">Electrical & Public Lighting Authority</option>
-                <option value="Urban Forestry & Parks Division">Urban Forestry & Parks Division</option>
+                <option value="Public Works & Roads Department">{t('dept_pwd')}</option>
+                <option value="Municipal Water Supply & Sewerage Board">{t('dept_water')}</option>
+                <option value="Sanitation & Solid Waste Management">{t('dept_sanitation')}</option>
+                <option value="Stormwater Drainage & Flood Control">{t('dept_drainage')}</option>
+                <option value="Electrical & Public Lighting Authority">{t('dept_electric')}</option>
+                <option value="Urban Forestry & Parks Division">{t('dept_parks')}</option>
               </select>
             </div>
           )}
@@ -173,14 +173,14 @@ export default function Register() {
               disabled={loading}
               className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow-xs transition flex items-center justify-center space-x-2"
             >
-              <span>{loading ? 'Creating Account...' : 'Complete Registration'}</span>
+              <span>{loading ? t('creating_account') : t('complete_registration')}</span>
               <ArrowRight size={15} />
             </button>
           </div>
         </form>
 
         <div className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
-          <span>Already registered? </span>
+          <span>{t('already_registered')} </span>
           <Link to="/login" className="text-blue-700 hover:text-blue-900 font-semibold">
             {t('login')} →
           </Link>

@@ -122,25 +122,25 @@ export default function Services() {
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Header — Government Light Theme */}
+      {/* Header — 100% Fully Localized */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center space-x-2 text-xs font-semibold text-indigo-800 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200 mb-2">
               <Briefcase size={13} className="text-indigo-700" />
-              <span>Autonomous Bureaucracy Execution Agent</span>
+              <span>{t('services_header_badge')}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
               {t('nav_services')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
-              Autonomous Playwright browser agent that navigates complex government portals, populates verified profile attributes, and pauses for explicit citizen consent before submission.
+              {t('services_header_desc')}
             </p>
           </div>
 
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700 flex items-center space-x-2 max-w-md">
             <Lock size={16} className="text-blue-700 shrink-0" />
-            <span className="font-medium">Human-in-the-Loop Guarantee: The agent strictly requires your review and approval before submitting.</span>
+            <span className="font-medium">{t('human_loop_guarantee')}</span>
           </div>
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function Services() {
         {/* Left Column: Service Catalog */}
         <div className="space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 px-1">
-            Supported Official Services
+            {t('supported_services_title')}
           </h2>
 
           <div className="space-y-2.5">
@@ -201,7 +201,7 @@ export default function Services() {
                     rel="noopener noreferrer"
                     className="flex items-center space-x-1 hover:text-blue-900 font-medium"
                   >
-                    <span>View Official Portal</span>
+                    <span>{t('view_official_portal')}</span>
                     <ExternalLink size={11} />
                   </a>
                 </div>
@@ -217,7 +217,7 @@ export default function Services() {
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
                 <span className="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
                   <FileCheck2 size={15} className="text-emerald-700" />
-                  <span>Document Readiness & Eligibility Verification</span>
+                  <span>{t('doc_readiness_title')}</span>
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   {selectedService.mandatory_documents?.map((doc, idx) => (
@@ -240,10 +240,10 @@ export default function Services() {
                     className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs py-3.5 rounded-xl shadow-xs transition flex items-center justify-center space-x-2"
                   >
                     <Sparkles size={16} />
-                    <span>Launch Autonomous Playwright Agent</span>
+                    <span>{t('launch_agent_btn')}</span>
                   </button>
                   <p className="text-[11px] text-center text-slate-500 mt-2">
-                    Browser agent will navigate to portal, structure form inputs, and pause for your authorization.
+                    {t('launch_agent_desc')}
                   </p>
                 </div>
               )}
@@ -252,7 +252,7 @@ export default function Services() {
                 <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center space-y-3">
                   <Loader2 size={32} className="animate-spin text-blue-700 mx-auto" />
                   <p className="text-xs font-bold text-slate-900">
-                    Agent Navigating Official Portal & Synthesizing Form Fields...
+                    {t('agent_navigating')}
                   </p>
                   <div className="text-[11px] font-mono text-slate-600 space-y-1">
                     {telemetryLogs.map((log, lIdx) => (
@@ -267,11 +267,11 @@ export default function Services() {
                 <div className="bg-amber-50/70 border-2 border-amber-300 rounded-xl p-5 space-y-4">
                   <div className="flex items-center space-x-2 text-amber-900 font-bold text-sm">
                     <AlertCircle size={18} className="text-amber-700" />
-                    <span>Mandatory Citizen Authorization Checkpoint</span>
+                    <span>{t('checkpoint_title')}</span>
                   </div>
 
                   <p className="text-xs text-slate-700 leading-relaxed">
-                    The autonomous browser agent has navigated to <strong>{draftResult.portal_name}</strong> and pre-filled the required details from your verified profile. You must inspect the pre-submission snapshot and grant explicit authorization before final submission.
+                    {t('checkpoint_desc')}
                   </p>
 
                   {/* Pre-approval Screenshot from Browser Agent */}
@@ -286,9 +286,9 @@ export default function Services() {
                   )}
 
                   <div className="bg-white p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1">
-                    <p><strong>Tracking Reference Assigned:</strong> {draftResult.reference_number}</p>
-                    <p><strong>Applicant Name:</strong> {draftResult.form_data?.applicant_name || user?.full_name}</p>
-                    <p><strong>State / Region:</strong> {draftResult.form_data?.state || profile?.state || 'Verified'}</p>
+                    <p><strong>{t('assigned_ref')}</strong> {draftResult.reference_number}</p>
+                    <p><strong>{t('applicant_name')}</strong> {draftResult.form_data?.applicant_name || user?.full_name}</p>
+                    <p><strong>{t('state_region')}</strong> {draftResult.form_data?.state || profile?.state || 'Verified'}</p>
                   </div>
 
                   <div className="flex items-center space-x-3 pt-2">
@@ -297,13 +297,13 @@ export default function Services() {
                       className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs transition flex items-center justify-center space-x-1.5"
                     >
                       <CheckCircle2 size={15} />
-                      <span>Approve & Authorize Final Submission</span>
+                      <span>{t('approve_authorize_btn')}</span>
                     </button>
                     <button
                       onClick={() => handleApproveAndSubmit(false)}
                       className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl"
                     >
-                      Cancel
+                      {t('cancel_btn')}
                     </button>
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export default function Services() {
                 <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center space-y-3">
                   <Loader2 size={32} className="animate-spin text-emerald-700 mx-auto" />
                   <p className="text-xs font-bold text-slate-900">
-                    Citizen Consent Verified. Submitting to Government Authority...
+                    {t('submitting_to_gov')}
                   </p>
                 </div>
               )}
@@ -323,12 +323,11 @@ export default function Services() {
                 <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-5 space-y-4">
                   <div className="flex items-center space-x-2 text-emerald-900 font-bold text-sm">
                     <CheckCircle2 size={20} className="text-emerald-700" />
-                    <span>Application Officially Submitted & Acknowledged!</span>
+                    <span>{t('app_submitted_title')}</span>
                   </div>
 
                   <p className="text-xs text-slate-700">
-                    Your application has been received by <strong>{selectedService.portal_name}</strong>.
-                    Official acknowledgement tracking receipt generated.
+                    {t('app_submitted_desc')}
                   </p>
 
                   {/* Submission Receipt Image */}
@@ -344,7 +343,7 @@ export default function Services() {
 
                   <div className="bg-white p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700">
                     <p>
-                      <strong>Official Acknowledgement Reference:</strong>{' '}
+                      <strong>{t('official_ack_ref')}</strong>{' '}
                       <span className="font-mono text-emerald-700 font-bold">{finalResult.reference_number}</span>
                     </p>
                     <a
@@ -353,7 +352,7 @@ export default function Services() {
                       rel="noopener noreferrer"
                       className="text-blue-700 hover:underline mt-1 inline-flex items-center space-x-1 font-semibold"
                     >
-                      <span>Track Directly on Department Portal</span>
+                      <span>{t('track_portal_link')}</span>
                       <ExternalLink size={11} />
                     </a>
                   </div>
@@ -366,7 +365,7 @@ export default function Services() {
                     }}
                     className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs"
                   >
-                    Complete Another Application
+                    {t('complete_another_btn')}
                   </button>
                 </div>
               )}

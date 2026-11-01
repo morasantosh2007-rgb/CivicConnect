@@ -37,10 +37,10 @@ export default function Login() {
             <ShieldCheck size={26} className="text-amber-400" />
           </div>
           <h1 className="text-2xl font-extrabold text-[#0c2340] tracking-tight">
-            Sign In to CivicConnect
+            {t('login_title')}
           </h1>
           <p className="text-xs text-slate-500">
-            Access schemes, submit grievances, and track applications.
+            {t('login_subtitle')}
           </p>
         </div>
 
@@ -52,7 +52,7 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Email Address</label>
+            <label className="block font-semibold text-slate-700 mb-1">{t('email_label')}</label>
             <div className="relative">
               <Mail size={16} className="absolute left-3 top-3 text-slate-400" />
               <input
@@ -68,7 +68,7 @@ export default function Login() {
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="font-semibold text-slate-700">Password</label>
+              <label className="font-semibold text-slate-700">{t('password_label')}</label>
             </div>
             <div className="relative">
               <Lock size={16} className="absolute left-3 top-3 text-slate-400" />
@@ -88,13 +88,13 @@ export default function Login() {
             disabled={loading}
             className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow-xs transition flex items-center justify-center space-x-2"
           >
-            <span>{loading ? 'Authenticating...' : t('login')}</span>
+            <span>{loading ? t('authenticating') : t('login')}</span>
             <LogIn size={15} />
           </button>
         </form>
 
         <div className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
-          <span>Don't have an account? </span>
+          <span>{t('dont_have_account')}{' '}</span>
           <Link to="/register" className="text-blue-700 hover:text-blue-900 font-semibold">
             {t('register')} →
           </Link>

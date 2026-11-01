@@ -6,7 +6,6 @@ import {
   AlertTriangle,
   Briefcase,
   CheckCheck,
-  Bot,
   ArrowRight,
   Volume2,
   Calendar,
@@ -15,15 +14,14 @@ import {
   ShieldCheck,
   ExternalLink,
   Users,
-  CheckCircle2,
-  Clock,
   RefreshCw
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import VoicePlayer from '../components/VoicePlayer';
 
 export default function Home() {
-  const { language, t } = useLanguage();
+  const { language, supportedLanguages, t } = useLanguage();
+  const currentLangObj = supportedLanguages?.find(l => l.code === language);
   const [announcements, setAnnouncements] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [recentGrievances, setRecentGrievances] = useState([]);
@@ -65,14 +63,14 @@ export default function Home() {
 
   return (
     <div className="space-y-8 pb-16">
-      {/* Hero Section — Official White & Navy Theme */}
+      {/* Hero Section — 100% Fully Translated */}
       <section className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 p-6 sm:p-10 shadow-sm">
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-white to-emerald-600"></div>
 
         <div className="relative z-10 max-w-3xl">
           <div className="inline-flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full text-xs font-semibold text-blue-800 mb-4">
             <ShieldCheck size={14} className="text-blue-700" />
-            <span>Digital Governance & Citizen Rights Platform</span>
+            <span>{t('hero_badge')}</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold text-[#0c2340] tracking-tight leading-tight">
@@ -105,60 +103,60 @@ export default function Home() {
               className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold text-xs sm:text-sm px-5 py-3 rounded-xl transition flex items-center space-x-2"
             >
               <CheckCheck size={18} className="text-emerald-700" />
-              <span>Verify News & Claims</span>
+              <span>{t('verify_claims')}</span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Live Public Accountability Metrics Banner (From actual DB) */}
+      {/* Live Public Accountability Metrics Banner */}
       {analytics && (
         <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-100 gap-2">
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center space-x-2">
                 <TrendingUp size={16} className="text-emerald-600" />
-                <span>Live Municipal Accountability Tracker</span>
+                <span>{t('accountability_title')}</span>
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Computed from live civic records. Zero simulated metrics.
+                {t('accountability_desc')}
               </p>
             </div>
             <span className="text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
-              Resolution Rate: <strong className="text-emerald-700 font-bold">{analytics.resolution_rate_percent}%</strong>
+              {t('resolution_rate')}: <strong className="text-emerald-700 font-bold">{analytics.resolution_rate_percent}%</strong>
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-              <span className="text-xs font-medium text-slate-500">Total Grievances</span>
+              <span className="text-xs font-medium text-slate-500">{t('total_grievances')}</span>
               <p className="text-2xl font-bold text-slate-900 mt-1">{analytics.total_grievances}</p>
             </div>
             <div className="bg-amber-50/60 p-4 rounded-xl border border-amber-200">
-              <span className="text-xs font-medium text-amber-800">Pending / Triaged</span>
+              <span className="text-xs font-medium text-amber-800">{t('pending_triaged')}</span>
               <p className="text-2xl font-bold text-amber-700 mt-1">{analytics.pending_triaged}</p>
             </div>
             <div className="bg-blue-50/60 p-4 rounded-xl border border-blue-200">
-              <span className="text-xs font-medium text-blue-800">In Active Progress</span>
+              <span className="text-xs font-medium text-blue-800">{t('in_active_progress')}</span>
               <p className="text-2xl font-bold text-blue-700 mt-1">{analytics.in_progress}</p>
             </div>
             <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200">
-              <span className="text-xs font-medium text-emerald-800">Successfully Resolved</span>
+              <span className="text-xs font-medium text-emerald-800">{t('successfully_resolved')}</span>
               <p className="text-2xl font-bold text-emerald-700 mt-1">{analytics.resolved}</p>
             </div>
           </div>
         </section>
       )}
 
-      {/* Four Interconnected Modules (No "Problem Statement" badges) */}
+      {/* Interconnected Modules */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900">
-              Unified Citizen Technology Ecosystem
+              {t('ecosystem_title')}
             </h2>
             <p className="text-xs text-slate-500">
-              Interconnected governance solutions delivering transparency, accountability, and citizen empowerment.
+              {t('ecosystem_desc')}
             </p>
           </div>
         </div>
@@ -174,14 +172,14 @@ export default function Home() {
                 <FileText size={20} />
               </div>
               <h3 className="font-bold text-sm text-slate-900 group-hover:text-blue-700 transition">
-                Multilingual Policy & Scheme Intelligence
+                {t('card1_title')}
               </h3>
               <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Live official PIB notifications, plain-language legal explainers, personalized scheme matching, and regional voice narration.
+                {t('card1_desc')}
               </p>
             </div>
             <span className="mt-4 inline-flex items-center space-x-1 text-xs font-semibold text-blue-700 group-hover:translate-x-1 transition-transform">
-              <span>Explore Schemes</span>
+              <span>{t('card1_action')}</span>
               <ArrowRight size={13} />
             </span>
           </Link>
@@ -196,14 +194,14 @@ export default function Home() {
                 <AlertTriangle size={20} />
               </div>
               <h3 className="font-bold text-sm text-slate-900 group-hover:text-amber-700 transition">
-                Transparent Civic Grievance Triage
+                {t('card2_title')}
               </h3>
               <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Civic community feed, computer vision defect detection, speech-to-text recording, and automated departmental routing.
+                {t('card2_desc')}
               </p>
             </div>
             <span className="mt-4 inline-flex items-center space-x-1 text-xs font-semibold text-amber-700 group-hover:translate-x-1 transition-transform">
-              <span>View Community Feed</span>
+              <span>{t('card2_action')}</span>
               <ArrowRight size={13} />
             </span>
           </Link>
@@ -218,14 +216,14 @@ export default function Home() {
                 <Briefcase size={20} />
               </div>
               <h3 className="font-bold text-sm text-slate-900 group-hover:text-indigo-700 transition">
-                Autonomous Bureaucracy Agent
+                {t('card3_title')}
               </h3>
               <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Browser automation for solar subsidies and scholarships with explicit citizen approval checkpoints and receipt tracking.
+                {t('card3_desc')}
               </p>
             </div>
             <span className="mt-4 inline-flex items-center space-x-1 text-xs font-semibold text-indigo-700 group-hover:translate-x-1 transition-transform">
-              <span>Execute Services</span>
+              <span>{t('card3_action')}</span>
               <ArrowRight size={13} />
             </span>
           </Link>
@@ -240,30 +238,30 @@ export default function Home() {
                 <CheckCheck size={20} />
               </div>
               <h3 className="font-bold text-sm text-slate-900 group-hover:text-emerald-700 transition">
-                Real-Time Fact & Deepfake Audit
+                {t('card4_title')}
               </h3>
               <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                PIB Fact Check corroboration, clickable gazette citations, Error Level Analysis forensics, and synthetic media audit.
+                {t('card4_desc')}
               </p>
             </div>
             <span className="mt-4 inline-flex items-center space-x-1 text-xs font-semibold text-emerald-700 group-hover:translate-x-1 transition-transform">
-              <span>Audit News & Media</span>
+              <span>{t('card4_action')}</span>
               <ArrowRight size={13} />
             </span>
           </Link>
         </div>
       </section>
 
-      {/* Prominent Official Announcements Section */}
+      {/* Official Announcements Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <FileText size={18} className="text-blue-700" />
             <h2 className="text-lg font-bold text-slate-900">
-              Official Government Announcements & Schemes
+              {t('announcements_title')}
             </h2>
             <span className="text-[11px] bg-blue-100 text-blue-800 font-semibold px-2 py-0.5 rounded border border-blue-200">
-              PIB Ingested
+              {t('pib_ingested')}
             </span>
           </div>
 
@@ -274,13 +272,13 @@ export default function Home() {
               className="text-xs bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-300 flex items-center space-x-1 transition shadow-xs"
             >
               <RefreshCw size={13} />
-              <span className="hidden sm:inline">Refresh PIB</span>
+              <span className="hidden sm:inline">{t('refresh_pib')}</span>
             </button>
             <Link
               to="/policies"
               className="text-xs text-blue-700 hover:text-blue-900 font-semibold flex items-center space-x-1"
             >
-              <span>View All</span>
+              <span>{t('view_all')}</span>
               <ArrowRight size={13} />
             </Link>
           </div>
@@ -316,7 +314,7 @@ export default function Home() {
                 {item.affected_citizens && (
                   <div className="mt-3 inline-flex items-center space-x-1.5 text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">
                     <Users size={12} className="text-amber-600" />
-                    <span>Target: {item.affected_citizens}</span>
+                    <span>{t('target_label')}: {item.affected_citizens}</span>
                   </div>
                 )}
               </div>
@@ -330,7 +328,7 @@ export default function Home() {
                   className="text-xs text-blue-700 hover:text-blue-900 font-semibold flex items-center space-x-1 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 transition"
                 >
                   <Volume2 size={13} />
-                  <span>Listen in {language.toUpperCase()}</span>
+                  <span>{t('listen_in_lang')} {currentLangObj?.native || language.toUpperCase()}</span>
                 </button>
 
                 <a
@@ -339,7 +337,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="text-xs text-blue-700 hover:text-blue-900 font-semibold flex items-center space-x-1"
                 >
-                  <span>Official Gazette Link</span>
+                  <span>{t('official_gazette_link')}</span>
                   <ExternalLink size={12} />
                 </a>
               </div>
@@ -348,19 +346,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Active Voice Player Modal / Strip if triggered */}
+      {/* Voice Player Modal / Strip */}
       {activeSpeechText && (
         <div className="bg-amber-50/70 border border-amber-300 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
               <Volume2 size={15} />
-              <span>Now Playing Regional Narration: {activeSpeechTitle}</span>
+              <span>{t('now_playing')} {activeSpeechTitle}</span>
             </span>
             <button
               onClick={() => setActiveSpeechText(null)}
               className="text-xs text-slate-500 hover:text-slate-800 font-semibold"
             >
-              Close
+              {t('close')}
             </button>
           </div>
           <VoicePlayer text={activeSpeechText} title={activeSpeechTitle} />
@@ -374,14 +372,14 @@ export default function Home() {
             <div className="flex items-center space-x-2">
               <AlertTriangle size={18} className="text-amber-600" />
               <h2 className="text-lg font-bold text-slate-900">
-                Recent Civic Grievances & Community Triage
+                {t('recent_grievances_title')}
               </h2>
             </div>
             <Link
               to="/grievances"
               className="text-xs text-blue-700 hover:text-blue-900 font-semibold flex items-center space-x-1"
             >
-              <span>Explore All Reports</span>
+              <span>{t('explore_all_reports')}</span>
               <ArrowRight size={13} />
             </Link>
           </div>
@@ -402,7 +400,13 @@ export default function Home() {
                           : 'bg-amber-100 text-amber-800 border border-amber-200'
                       }`}
                     >
-                      {g.status}
+                      {g.status === 'Resolved'
+                        ? t('status_resolved')
+                        : g.status === 'In Progress'
+                        ? t('status_in_progress')
+                        : g.status === 'Submitted'
+                        ? t('status_submitted')
+                        : g.status}
                     </span>
                   </div>
 
@@ -419,13 +423,13 @@ export default function Home() {
                 <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                   <div className="flex items-center space-x-1 text-amber-700 font-semibold">
                     <span>{g.upvotes_count}</span>
-                    <span className="text-[11px] text-slate-500 font-normal">upvotes</span>
+                    <span className="text-[11px] text-slate-500 font-normal">{t('upvotes_label')}</span>
                   </div>
                   <Link
                     to={`/grievances`}
                     className="text-blue-700 hover:text-blue-900 font-semibold text-[11px]"
                   >
-                    View Details →
+                    {t('view_details')}
                   </Link>
                 </div>
               </div>

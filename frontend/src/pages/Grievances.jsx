@@ -251,21 +251,66 @@ export default function Grievances() {
     'Other infrastructure'
   ];
 
+  const getGrievanceCategoryLabel = (cat) => {
+    switch (cat) {
+      case 'Potholes': return t('cat_potholes');
+      case 'Road cracks': return t('cat_road_cracks');
+      case 'Damaged roads': return t('cat_damaged_roads');
+      case 'Water leakage': return t('cat_water_leakage');
+      case 'Waterlogging': return t('cat_waterlogging');
+      case 'Drainage problems': return t('cat_drainage');
+      case 'Garbage accumulation': return t('cat_garbage');
+      case 'Overflowing dustbins': return t('cat_dustbins');
+      case 'Broken streetlights': return t('cat_streetlights');
+      case 'Damaged bridges': return t('cat_bridges');
+      case 'Open manholes': return t('cat_manholes');
+      case 'Fallen trees': return t('cat_fallen_trees');
+      case 'Electrical hazards': return t('cat_electrical');
+      case 'Other infrastructure': return t('cat_other_infra');
+      default: return cat;
+    }
+  };
+
+  const getGrievanceStatusLabel = (status) => {
+    switch (status) {
+      case 'Submitted': return t('status_submitted');
+      case 'AI Analyzed': return t('status_ai_analyzed');
+      case 'Department Suggested': return t('status_dept_suggested');
+      case 'Assigned': return t('status_assigned');
+      case 'Acknowledged': return t('status_acknowledged');
+      case 'In Progress': return t('status_in_progress');
+      case 'Resolution Submitted': return t('status_res_submitted');
+      case 'Resolved': return t('status_resolved');
+      case 'Rejected': return t('status_rejected');
+      default: return status;
+    }
+  };
+
+  const getGrievanceSeverityLabel = (sev) => {
+    switch (sev) {
+      case 'Critical': return t('sev_critical');
+      case 'High': return t('sev_high');
+      case 'Medium': return t('sev_medium');
+      case 'Low': return t('sev_low');
+      default: return sev;
+    }
+  };
+
   return (
     <div className="space-y-6 pb-16">
-      {/* Header & Controls — Government Light Theme */}
+      {/* Header & Controls — 100% Fully Localized */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center space-x-2 text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 mb-2">
               <AlertTriangle size={13} className="text-amber-700" />
-              <span>Transparent Civic Grievance Triage</span>
+              <span>{t('grievances_header_badge')}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
               {t('nav_grievances')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
-              Community-driven civic issue feed with real-time computer vision analysis, multimodal severity triage, and automated departmental routing.
+              {t('grievances_header_desc')}
             </p>
           </div>
 
@@ -277,18 +322,18 @@ export default function Grievances() {
             className="bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-xs transition flex items-center space-x-2"
           >
             <Camera size={16} />
-            <span>Report Civic Problem</span>
+            <span>{t('report_problem_btn')}</span>
           </button>
         </div>
 
         {/* Filters and Sorting */}
         <div className="mt-6 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-2 overflow-x-auto text-xs">
-            <span className="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Sort:</span>
+            <span className="text-slate-500 font-bold uppercase text-[10px] tracking-wider">{t('sort_label')}</span>
             {[
-              { id: 'latest', label: 'Latest Reports' },
-              { id: 'top_voted', label: 'Most Supported' },
-              { id: 'severity', label: 'Critical Severity' }
+              { id: 'latest', label: t('sort_latest') },
+              { id: 'top_voted', label: t('sort_top_voted') },
+              { id: 'severity', label: t('sort_severity') }
             ].map((s) => (
               <button
                 key={s.id}
@@ -310,9 +355,9 @@ export default function Grievances() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="bg-white border border-slate-300 text-slate-800 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-xs"
             >
-              <option value="">All Categories</option>
+              <option value="">{t('all_categories')}</option>
               {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>{getGrievanceCategoryLabel(c)}</option>
               ))}
             </select>
           </div>
@@ -341,7 +386,7 @@ export default function Grievances() {
                   <ThumbsUp size={18} />
                 </button>
                 <span className="text-xs font-bold text-slate-800 mt-1">{g.upvotes_count}</span>
-                <span className="text-[9px] text-slate-500 uppercase tracking-tighter">votes</span>
+                <span className="text-[9px] text-slate-500 uppercase tracking-tighter">{t('upvotes_label')}</span>
               </div>
 
               {/* Main Content Body */}
@@ -366,12 +411,10 @@ export default function Grievances() {
                           ? 'bg-red-50 text-red-700 border-red-200'
                           : g.severity === 'High'
                           ? 'bg-orange-50 text-orange-700 border-orange-200'
-                          : g.severity === 'Medium'
-                          ? 'bg-amber-50 text-amber-800 border-amber-200'
-                          : 'bg-slate-100 text-slate-700 border-slate-200'
+                          : 'bg-amber-50 text-amber-800 border-amber-200'
                       }`}
                     >
-                      {g.severity}
+                      {getGrievanceSeverityLabel(g.severity)}
                     </span>
 
                     {/* Status Badge */}
@@ -382,7 +425,7 @@ export default function Grievances() {
                           : 'bg-blue-50 text-blue-800 border-blue-200'
                       }`}
                     >
-                      {g.status}
+                      {getGrievanceStatusLabel(g.status)}
                     </span>
                   </div>
                 </div>
@@ -406,7 +449,7 @@ export default function Grievances() {
                     {g.cv_analysis && g.cv_analysis.detected_classes?.length > 0 && (
                       <div className="absolute top-2 left-2 bg-white/95 shadow-sm px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] text-amber-800 font-semibold flex items-center space-x-1.5">
                         <Sparkles size={11} className="text-amber-600" />
-                        <span>CV Detected: {g.cv_analysis.detected_classes.join(', ')}</span>
+                        <span>{t('cv_detected_label')} {g.cv_analysis.detected_classes.join(', ')}</span>
                       </div>
                     )}
                   </div>
@@ -435,7 +478,7 @@ export default function Grievances() {
 
                   {g.duplicate_of_id && (
                     <span className="bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200 text-[10px] font-semibold">
-                      Linked Proximity Report
+                      {t('linked_proximity')}
                     </span>
                   )}
                 </div>
@@ -447,7 +490,7 @@ export default function Grievances() {
                     className="text-xs text-slate-600 hover:text-blue-700 flex items-center space-x-1.5 transition font-medium"
                   >
                     <MessageSquare size={14} />
-                    <span>{g.comment_count || 0} Comments</span>
+                    <span>{g.comment_count || 0} {t('comments_count_label')}</span>
                   </button>
                 </div>
 
@@ -472,7 +515,7 @@ export default function Grievances() {
                         value={newCommentText}
                         onChange={(e) => setNewCommentText(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handlePostComment(g.id)}
-                        placeholder="Add community comment or verification update..."
+                        placeholder={t('add_comment_placeholder')}
                         className="flex-1 bg-white border border-slate-300 text-xs text-slate-900 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
                       />
                       <button
@@ -498,10 +541,10 @@ export default function Grievances() {
               <div>
                 <h2 className="text-lg font-bold text-[#0c2340] flex items-center space-x-2">
                   <Camera size={18} className="text-blue-700" />
-                  <span>Report Civic Infrastructure Problem</span>
+                  <span>{t('report_modal_title')}</span>
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Attach photo, voice description, and GPS coordinates for automated AI triage.
+                  {t('report_modal_desc')}
                 </p>
               </div>
               <button
@@ -518,16 +561,16 @@ export default function Grievances() {
                 <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs text-emerald-900 space-y-2">
                   <div className="flex items-center space-x-2 font-bold text-sm text-emerald-800">
                     <CheckCircle2 size={18} />
-                    <span>Grievance Successfully Registered!</span>
+                    <span>{t('registered_success_title')}</span>
                   </div>
                   <p>
-                    Ticket Ref: <strong>{submissionResult.grievance.ticket_number}</strong>
+                    {t('ticket_ref')} <strong>{submissionResult.grievance.ticket_number}</strong>
                   </p>
                   <p>
-                    Automatically Routed To: <strong>{submissionResult.ai_analysis.routed_department}</strong>
+                    {t('routed_to')} <strong>{submissionResult.ai_analysis.routed_department}</strong>
                   </p>
                   <p>
-                    AI Recommended Severity: <strong>{submissionResult.ai_analysis.suggested_severity}</strong> (Confidence: {submissionResult.ai_analysis.severity_confidence * 100}%)
+                    {t('ai_recommended_severity')} <strong>{submissionResult.ai_analysis.suggested_severity}</strong> (Confidence: {submissionResult.ai_analysis.severity_confidence * 100}%)
                   </p>
                   <p className="text-slate-600 italic">
                     "{submissionResult.ai_analysis.severity_rationale}"
@@ -535,9 +578,9 @@ export default function Grievances() {
 
                   {submissionResult.ai_analysis.duplicate_candidate && (
                     <div className="mt-3 bg-amber-50 p-3 rounded-xl border border-amber-200 text-amber-900">
-                      <span className="font-bold block mb-1">Proximity Alert:</span>
+                      <span className="font-bold block mb-1">{t('proximity_alert_title')}</span>
                       <span>
-                        A similar grievance ({submissionResult.ai_analysis.duplicate_candidate.ticket_number}) was detected {submissionResult.ai_analysis.duplicate_candidate.distance_meters} meters away. Your report has been linked to bolster departmental priority!
+                        {t('proximity_alert_desc')}
                       </span>
                     </div>
                   )}
@@ -547,39 +590,39 @@ export default function Grievances() {
                   onClick={() => setShowSubmitModal(false)}
                   className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs"
                 >
-                  Return to Civic Feed
+                  {t('return_to_feed')}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmitGrievance} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Title / Brief Subject</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">{t('subject_label')}</label>
                   <input
                     type="text"
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="e.g. Deep pothole causing accidents near Metro Pillar 42"
+                    placeholder={t('subject_placeholder')}
                     className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Infrastructure Category</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">{t('infra_category_label')}</label>
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       className="w-full bg-white border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                     >
                       {categories.map((c) => (
-                        <option key={c} value={c}>{c}</option>
+                        <option key={c} value={c}>{getGrievanceCategoryLabel(c)}</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Location Coordinates</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">{t('location_coords_label')}</label>
                     <div className="flex space-x-2">
                       <button
                         type="button"
@@ -587,11 +630,11 @@ export default function Grievances() {
                         className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3 py-2.5 rounded-xl flex items-center space-x-1 shrink-0"
                       >
                         <MapPin size={14} className="text-amber-600" />
-                        <span>Detect GPS</span>
+                        <span>{t('detect_gps')}</span>
                       </button>
                       <input
                         type="text"
-                        placeholder="Address / Area"
+                        placeholder={t('address_placeholder')}
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
@@ -601,13 +644,13 @@ export default function Grievances() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Detailed Description</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">{t('detailed_desc_label')}</label>
                   <textarea
                     rows={3}
                     required
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Describe the severity, when it started, and risk to pedestrians or motorists..."
+                    placeholder={t('detailed_desc_placeholder')}
                     className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl p-3 focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
@@ -617,11 +660,11 @@ export default function Grievances() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-slate-700 flex items-center space-x-1.5">
                       <Mic size={14} className="text-blue-700" />
-                      <span>Record Regional Voice Description (Optional)</span>
+                      <span>{t('record_voice_label')}</span>
                     </span>
                     {isRecording && (
                       <span className="text-red-600 text-xs font-mono font-bold animate-pulse">
-                        ● Recording {recordingTime}s
+                        ● {t('recording_pulse')} {recordingTime}s
                       </span>
                     )}
                   </div>
@@ -634,7 +677,7 @@ export default function Grievances() {
                         className="bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-300 flex items-center space-x-1.5 shadow-xs"
                       >
                         <Mic size={14} />
-                        <span>Start Voice Note</span>
+                        <span>{t('start_voice_btn')}</span>
                       </button>
                     ) : (
                       <button
@@ -643,7 +686,7 @@ export default function Grievances() {
                         className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center space-x-1.5"
                       >
                         <MicOff size={14} />
-                        <span>Stop & Save Recording</span>
+                        <span>{t('stop_voice_btn')}</span>
                       </button>
                     )}
 
@@ -657,7 +700,7 @@ export default function Grievances() {
 
                 {/* Photo Upload with CV Preview */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Upload Photo / Evidence</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">{t('upload_evidence_label')}</label>
                   <input
                     type="file"
                     accept="image/*"
@@ -677,7 +720,7 @@ export default function Grievances() {
                     disabled={submitting}
                     className="w-full bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs font-bold py-3 rounded-xl shadow-xs transition"
                   >
-                    {submitting ? 'Running CV Inference & Routing...' : 'Submit Official Grievance'}
+                    {submitting ? t('submitting_grievance_btn') : t('submit_grievance_btn')}
                   </button>
                 </div>
               </form>

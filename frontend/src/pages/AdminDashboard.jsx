@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       };
 
       await axios.put(`/api/v1/admin/grievances/${selectedGrievance.id}/status`, payload);
-      alert('Grievance status and audit history successfully updated.');
+      alert(t('audit_success_msg'));
       setSelectedGrievance(null);
       fetchAdminData();
     } catch (err) {
@@ -107,13 +107,38 @@ export default function AdminDashboard() {
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'Submitted': return t('status_submitted');
+      case 'AI Analyzed': return t('status_ai_analyzed');
+      case 'Department Suggested': return t('status_dept_suggested');
+      case 'Assigned': return t('status_assigned');
+      case 'Acknowledged': return t('status_acknowledged');
+      case 'In Progress': return t('status_in_progress');
+      case 'Resolution Submitted': return t('status_res_submitted');
+      case 'Resolved': return t('status_resolved');
+      case 'Rejected': return t('status_rejected');
+      default: return status;
+    }
+  };
+
+  const getSeverityLabel = (sev) => {
+    switch (sev) {
+      case 'Critical': return t('sev_critical');
+      case 'High': return t('sev_high');
+      case 'Medium': return t('sev_medium');
+      case 'Low': return t('sev_low');
+      default: return sev;
+    }
+  };
+
   if (!isOfficerOrAdmin()) {
     return (
       <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center space-y-4 max-w-xl mx-auto my-12 shadow-xs">
         <ShieldAlert size={48} className="text-red-600 mx-auto" />
-        <h2 className="text-xl font-bold text-slate-900">Access Denied</h2>
+        <h2 className="text-xl font-bold text-slate-900">{t('access_denied')}</h2>
         <p className="text-xs text-slate-600 leading-relaxed">
-          The Officer & Administration Portal is strictly restricted to verified Municipal Officers, Department Administrators, and Platform Operators.
+          {t('access_denied_desc')}
         </p>
       </div>
     );
@@ -142,15 +167,15 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h1 className="text-2xl font-extrabold text-[#0c2340] tracking-tight">
-                Municipal Officer & Administration Portal
+                {t('admin_portal_title')}
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
-                Authorized jurisdictional triage, officer assignment, AI classification review, and complaint lifecycle management.
+                {t('admin_portal_desc')}
               </p>
             </div>
           </div>
           <div className="text-xs text-slate-700 font-mono bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-            Role: <strong>{user?.role}</strong> | Dept: <strong>{user?.department || 'All Departments'}</strong>
+            {t('role_prefix')} <strong>{user?.role}</strong> | {t('dept_prefix')} <strong>{user?.department || t('all_departments')}</strong>
           </div>
         </div>
 
@@ -158,23 +183,23 @@ export default function AdminDashboard() {
         {analytics && (
           <div className="mt-6 pt-6 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-              <span className="text-[11px] text-slate-500">Total Grievances</span>
+              <span className="text-[11px] text-slate-500">{t('total_grievances')}</span>
               <p className="text-xl font-bold text-slate-900 mt-1">{analytics.total_grievances}</p>
             </div>
             <div className="bg-amber-50/60 p-3 rounded-xl border border-amber-200">
-              <span className="text-[11px] text-amber-800 font-medium">Pending Triage</span>
+              <span className="text-[11px] text-amber-800 font-medium">{t('pending_triaged')}</span>
               <p className="text-xl font-bold text-amber-700 mt-1">{analytics.pending_triaged}</p>
             </div>
             <div className="bg-blue-50/60 p-3 rounded-xl border border-blue-200">
-              <span className="text-[11px] text-blue-800 font-medium">In Progress</span>
+              <span className="text-[11px] text-blue-800 font-medium">{t('in_active_progress')}</span>
               <p className="text-xl font-bold text-blue-700 mt-1">{analytics.in_progress}</p>
             </div>
             <div className="bg-emerald-50/60 p-3 rounded-xl border border-emerald-200">
-              <span className="text-[11px] text-emerald-800 font-medium">Resolved</span>
+              <span className="text-[11px] text-emerald-800 font-medium">{t('successfully_resolved')}</span>
               <p className="text-xl font-bold text-emerald-700 mt-1">{analytics.resolved}</p>
             </div>
             <div className="bg-red-50/60 p-3 rounded-xl border border-red-200">
-              <span className="text-[11px] text-red-800 font-medium">Critical Unresolved</span>
+              <span className="text-[11px] text-red-800 font-medium">{t('critical_unresolved')}</span>
               <p className="text-xl font-bold text-red-700 mt-1">{analytics.critical_unresolved}</p>
             </div>
           </div>
@@ -191,9 +216,9 @@ export default function AdminDashboard() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="bg-white border border-slate-300 text-slate-800 rounded-xl px-3 py-2 shadow-xs"
             >
-              <option value="">All Statuses</option>
+              <option value="">{t('all_statuses')}</option>
               {validStatuses.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>{getStatusLabel(s)}</option>
               ))}
             </select>
 
@@ -202,16 +227,16 @@ export default function AdminDashboard() {
               onChange={(e) => setSeverityFilter(e.target.value)}
               className="bg-white border border-slate-300 text-slate-800 rounded-xl px-3 py-2 shadow-xs"
             >
-              <option value="">All Severities</option>
-              <option value="Critical">Critical</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
+              <option value="">{t('all_severities')}</option>
+              <option value="Critical">{t('sev_critical')}</option>
+              <option value="High">{t('sev_high')}</option>
+              <option value="Medium">{t('sev_medium')}</option>
+              <option value="Low">{t('sev_low')}</option>
             </select>
           </div>
 
           <span className="text-slate-500 font-mono text-[11px]">
-            {grievances.length} jurisdictional records found
+            {grievances.length} {t('records_found')}
           </span>
         </div>
 
@@ -236,10 +261,10 @@ export default function AdminDashboard() {
                         : 'bg-amber-100 text-amber-800 border-amber-200'
                     }`}
                   >
-                    {g.severity}
+                    {getSeverityLabel(g.severity)}
                   </span>
                   <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded border border-blue-200 font-semibold">
-                    {g.status}
+                    {getStatusLabel(g.status)}
                   </span>
                 </div>
 
@@ -247,11 +272,11 @@ export default function AdminDashboard() {
                 <p className="text-xs text-slate-600 line-clamp-1">{g.description}</p>
 
                 <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pt-1">
-                  <span>Category: <strong className="text-slate-700">{g.category}</strong></span>
+                  <span>{t('category_prefix')} <strong className="text-slate-700">{g.category}</strong></span>
                   <span>•</span>
-                  <span>Dept: <strong className="text-slate-700">{g.department}</strong></span>
+                  <span>{t('dept_prefix')} <strong className="text-slate-700">{g.department}</strong></span>
                   <span>•</span>
-                  <span>Citizen: {g.author_name}</span>
+                  <span>{t('citizen_prefix')} {g.author_name}</span>
                 </div>
               </div>
 
@@ -261,7 +286,7 @@ export default function AdminDashboard() {
                   className="bg-[#1e3a8a] hover:bg-blue-800 text-white font-semibold text-xs px-3.5 py-2 rounded-xl shadow-xs transition flex items-center space-x-1"
                 >
                   <Edit size={13} />
-                  <span>Review & Transition Status</span>
+                  <span>{t('review_transition_btn')}</span>
                 </button>
               </div>
             </div>
@@ -279,7 +304,7 @@ export default function AdminDashboard() {
                   {selectedGrievance.ticket_number}
                 </span>
                 <h3 className="text-base font-bold text-[#0c2340]">
-                  Officer Review & Status Transition
+                  {t('officer_review_title')}
                 </h3>
               </div>
               <button
@@ -300,34 +325,34 @@ export default function AdminDashboard() {
             <form onSubmit={handleSaveStatus} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Update Status</label>
+                  <label className="block font-semibold text-slate-700 mb-1">{t('update_status_label')}</label>
                   <select
                     value={updateStatus}
                     onChange={(e) => setUpdateStatus(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                   >
                     {validStatuses.map((s) => (
-                      <option key={s} value={s}>{s}</option>
+                      <option key={s} value={s}>{getStatusLabel(s)}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Override Severity</label>
+                  <label className="block font-semibold text-slate-700 mb-1">{t('override_severity_label')}</label>
                   <select
                     value={updateSeverity}
                     onChange={(e) => setUpdateSeverity(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                   >
-                    <option value="Critical">Critical</option>
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
+                    <option value="Critical">{t('sev_critical')}</option>
+                    <option value="High">{t('sev_high')}</option>
+                    <option value="Medium">{t('sev_medium')}</option>
+                    <option value="Low">{t('sev_low')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Responsible Department</label>
+                  <label className="block font-semibold text-slate-700 mb-1">{t('responsible_dept_label')}</label>
                   <input
                     type="text"
                     value={updateDepartment}
@@ -337,16 +362,16 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Assign Officer</label>
+                  <label className="block font-semibold text-slate-700 mb-1">{t('assign_officer_label')}</label>
                   <select
                     value={assignedOfficerId}
                     onChange={(e) => setAssignedOfficerId(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-600"
                   >
-                    <option value="">Unassigned</option>
+                    <option value="">{t('unassigned')}</option>
                     {officers.map((o) => (
                       <option key={o.id} value={o.id}>
-                        {o.full_name} ({o.department || 'Officer'})
+                        {o.full_name} ({o.department || t('officer_badge')})
                       </option>
                     ))}
                   </select>
@@ -355,13 +380,13 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">
-                  Resolution Notes / Investigation Audit Log
+                  {t('resolution_notes_label')}
                 </label>
                 <textarea
                   rows={3}
                   value={resolutionNotes}
                   onChange={(e) => setResolutionNotes(e.target.value)}
-                  placeholder="Record dispatch of repair crew, contractor details, or verification outcome..."
+                  placeholder={t('resolution_notes_placeholder')}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 focus:ring-2 focus:ring-blue-600"
                 />
               </div>
@@ -372,7 +397,7 @@ export default function AdminDashboard() {
                   disabled={updating}
                   className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 rounded-xl shadow-xs transition"
                 >
-                  {updating ? 'Saving Audit Record...' : 'Confirm Status Transition & Update Audit Trail'}
+                  {updating ? t('saving_audit') : t('confirm_transition_btn')}
                 </button>
               </div>
             </form>

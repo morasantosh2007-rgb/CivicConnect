@@ -64,14 +64,14 @@ export default function Navbar({ onToggleSidebar, isSidebarOpen }) {
               <div>
                 <div className="flex items-center space-x-1.5">
                   <span className="text-xl font-bold tracking-tight text-white">
-                    CivicConnect
+                    {t('app_name')}
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-slate-950 px-1.5 py-0.2 rounded font-mono">
                     Gov.in
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-300 font-medium hidden sm:block">
-                  National Multilingual Citizen Governance Platform
+                  {t('hero_badge')}
                 </p>
               </div>
             </Link>
@@ -107,7 +107,7 @@ export default function Navbar({ onToggleSidebar, isSidebarOpen }) {
               }`}
             >
               <Eye size={15} />
-              <span className="hidden lg:inline text-[11px]">{t('high_contrast')}</span>
+              <span className="hidden lg:inline text-[11px]">{t('high_contrast_title')}</span>
             </button>
 
             {/* User Auth Controls */}
@@ -123,7 +123,7 @@ export default function Navbar({ onToggleSidebar, isSidebarOpen }) {
                   <span className="hidden sm:inline font-semibold">{user.full_name}</span>
                   {user.role !== 'citizen' && (
                     <span className="text-[10px] bg-amber-500 text-slate-950 px-1.5 py-0.2 rounded font-bold">
-                      {user.role === 'municipal_officer' ? 'Officer' : 'Admin'}
+                      {user.role === 'municipal_officer' ? t('officer_badge') : t('admin_badge')}
                     </span>
                   )}
                 </Link>

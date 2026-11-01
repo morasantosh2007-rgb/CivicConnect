@@ -13,18 +13,24 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Assistant() {
-  const { language, t } = useLanguage();
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      text: 'Namaste! I am your Multilingual AI Citizen Assistant. Ask me anything about government schemes, legal rights, grievance filing, or verifying official government notifications. I can also converse with you in your preferred language.',
-      citations: []
-    }
-  ]);
+  const { language, supportedLanguages, t } = useLanguage();
+  const currentLangObj = supportedLanguages?.find(l => l.code === language);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Initialize or update welcome greeting according to selected language
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'assistant',
+        text: t('assistant_welcome'),
+        citations: []
+      }
+    ]);
+  }, [language]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -58,7 +64,7 @@ export default function Assistant() {
         ...prev,
         {
           role: 'assistant',
-          text: 'The assistant could not retrieve data from the official repository at this moment. Please try again.',
+          text: t('retrieval_loading'),
           citations: []
         }
       ]);
@@ -104,7 +110,7 @@ export default function Assistant() {
 
   return (
     <div className="space-y-6 pb-16 max-w-4xl mx-auto">
-      {/* Header — Government White Theme */}
+      {/* Header — 100% Fully Localized */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="p-3 rounded-xl bg-blue-100 text-blue-800">
@@ -114,11 +120,11 @@ export default function Assistant() {
             <h1 className="text-xl font-bold text-[#0c2340] flex items-center space-x-2">
               <span>{t('nav_assistant')}</span>
               <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300 font-semibold">
-                Official RAG Active
+                {t('rag_active')}
               </span>
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              Multilingual policy and governance intelligence grounded in official gazettes and ministry portals.
+              {t('assistant_subtitle')}
             </p>
           </div>
         </div>
@@ -147,7 +153,7 @@ export default function Assistant() {
                   <div className="mt-3 pt-2.5 border-t border-slate-200 space-y-1.5">
                     <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider flex items-center space-x-1">
                       <CheckCircle2 size={12} className="text-emerald-700" />
-                      <span>Official Verified Citations</span>
+                      <span>{t('official_citations')}</span>
                     </span>
                     {m.citations.map((c, cIdx) => (
                       <a
@@ -171,7 +177,7 @@ export default function Assistant() {
                       className="hover:text-blue-800 flex items-center space-x-1 transition font-medium"
                     >
                       <Volume2 size={13} />
-                      <span>Listen in {language.toUpperCase()}</span>
+                      <span>{t('listen_in_lang')} {currentLangObj?.native || language.toUpperCase()}</span>
                     </button>
                     {m.provider && (
                       <span className="font-mono text-[9px] text-slate-400">{m.provider}</span>
@@ -185,7 +191,7 @@ export default function Assistant() {
           {loading && (
             <div className="flex items-center space-x-2 text-xs text-slate-600 bg-white p-3 rounded-2xl border border-slate-200 max-w-sm shadow-xs">
               <Loader2 size={15} className="animate-spin text-blue-700" />
-              <span>Grounded retrieval from official policy repository...</span>
+              <span>{t('retrieval_loading')}</span>
             </div>
           )}
           <div ref={messagesEndRef} />
@@ -209,7 +215,7 @@ export default function Assistant() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder={`Ask in ${language.toUpperCase()} about welfare schemes, grievance steps, or general questions...`}
+            placeholder={t('assistant_placeholder')}
             className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
           <button

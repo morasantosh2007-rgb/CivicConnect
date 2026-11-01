@@ -14,19 +14,25 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 
 export default function FloatingAssistant() {
-  const { language, t } = useLanguage();
+  const { language, supportedLanguages, t } = useLanguage();
+  const currentLangObj = supportedLanguages?.find(l => l.code === language);
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      text: 'Namaste! I am your Multilingual AI Citizen Assistant. How can I assist you with government schemes, grievance filing, or verifying official news today?',
-      citations: []
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Initialize or update welcome greeting according to selected language
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'assistant',
+        text: t('assistant_welcome'),
+        citations: []
+      }
+    ]);
+  }, [language]);
 
   useEffect(() => {
     if (isOpen) {
@@ -62,7 +68,7 @@ export default function FloatingAssistant() {
         ...prev,
         {
           role: 'assistant',
-          text: 'The assistant is connecting with official government data repositories. Please try again or query specific schemes like PM-Kisan or PM Surya Ghar.',
+          text: t('retrieval_loading'),
           citations: []
         }
       ]);
@@ -146,13 +152,13 @@ export default function FloatingAssistant() {
               </div>
               <div>
                 <h3 className="font-bold text-sm tracking-tight flex items-center space-x-1.5">
-                  <span>Civic AI Assistant</span>
+                  <span>{t('nav_assistant')}</span>
                   <span className="text-[10px] bg-emerald-700 text-white px-1.5 py-0.2 rounded font-semibold">
-                    Live
+                    {t('rag_active')}
                   </span>
                 </h3>
                 <p className="text-[11px] text-slate-300 font-medium">
-                  Multilingual Citizen Rights & Grievance Intelligence
+                  {t('assistant_subtitle')}
                 </p>
               </div>
             </div>
@@ -166,12 +172,12 @@ export default function FloatingAssistant() {
 
           {/* Quick Guidance Prompts */}
           <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 flex items-center space-x-1.5 overflow-x-auto text-[11px]">
-            <span className="text-slate-500 shrink-0 font-medium">Quick:</span>
+            <span className="text-slate-500 shrink-0 font-medium">{t('quick_prompts_title')}</span>
             {[
-              'PM Surya Ghar eligibility',
-              'Report deep road pothole',
-              'Check scholarship rules',
-              'Verify official PIB news'
+              t('prompt_solar'),
+              t('prompt_pothole'),
+              t('prompt_scholarship'),
+              t('prompt_factcheck')
             ].map((prompt, idx) => (
               <button
                 key={idx}
@@ -204,7 +210,7 @@ export default function FloatingAssistant() {
                     <div className="mt-2.5 pt-2 border-t border-slate-200 space-y-1">
                       <p className="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center space-x-1">
                         <CheckCircle2 size={11} className="text-emerald-700" />
-                        <span>Official Citations & Sources</span>
+                        <span>{t('official_citations')}</span>
                       </p>
                       {m.citations.map((c, cIdx) => (
                         <a
@@ -229,7 +235,7 @@ export default function FloatingAssistant() {
                         className="hover:text-blue-800 flex items-center space-x-1 transition font-medium"
                       >
                         <Volume2 size={12} />
-                        <span>Listen in {language.toUpperCase()}</span>
+                        <span>{t('listen_in_lang')} {currentLangObj?.native || language.toUpperCase()}</span>
                       </button>
                       {m.provider && (
                         <span className="font-mono text-[9px] text-slate-400">
@@ -244,7 +250,7 @@ export default function FloatingAssistant() {
             {loading && (
               <div className="flex items-center space-x-2 text-xs text-slate-600 bg-white p-2.5 rounded-xl border border-slate-200 max-w-[75%] shadow-xs">
                 <Loader2 size={14} className="animate-spin text-blue-700" />
-                <span>Consulting official government repository...</span>
+                <span>{t('retrieval_loading')}</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -268,7 +274,7 @@ export default function FloatingAssistant() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Ask about schemes, grievances, or facts..."
+              placeholder={t('assistant_placeholder')}
               className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
             <button
